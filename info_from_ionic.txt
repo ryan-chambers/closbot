@@ -1,0 +1,21 @@
+Your Ionic app is ready! Follow these next steps:
+
+- Run ionic serve within the app directory to see your app in the browser
+- Run ionic capacitor add to add a native iOS or Android project using Capacitor
+- Generate your app icon and splash screens using cordova-res --skip-config --copy
+- Explore the Ionic docs for components, tutorials, and more: https://ion.link/docs
+- Building an enterprise app? Ionic has Enterprise Support and Features: https://ion.link/enterprise-edition
+
+Instructions
+
+Build app after any code changes
+
+npx ionic cap copy
+
+Note: After making updates to the native portion of the code (such as adding a new plugin), use the sync command:
+
+This command builds and updates android project:
+npx ionic cap sync
+
+Running Android
+ionic cap open android

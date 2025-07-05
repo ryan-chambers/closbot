@@ -1,0 +1,7 @@
+{
+  "name": "ClosBot",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

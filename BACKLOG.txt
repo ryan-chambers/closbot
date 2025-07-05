@@ -1,0 +1,32 @@
+- bug: LLM replied with a mix of red and white wines to H60 page 18 that was only whites
+    - try some prompt engineering to avoid guessing
+- decide LLM model
+    - using OpenAI for now, since that is API I have access to already
+    - compare different models and their price
+    - OpenAI dropped model price for o-3
+- chore: android gradle plugin upgrade. Create a branch first as Android Studio may update source
+- enhancement: for menu summary, it shouldn't include everything. (Also, are some results hallucinated?) Try limiting to 5-8 "notable" wines
+- POC: local google model https://deepmind.google/models/gemma/?utm_source=alphasignal
+    - android code: https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference
+    - https://www.youtube.com/watch?v=XTvV3m1ncPQ
+        - instructions to install model to phone at 33:00
+- enhancement: add an option to show all LLM requests, RAG responses
+- feature : add citation for individual sources of info
+- enhancement: add pagination (or thumbnails?) to gallery?
+    - or cap at last, say, 10 wines... but then delete older ones that can't be viewed
+- mode: wine map, using leaflet
+- feature: add link to winery website on markdown for chat results
+- mode: admin : edit/delete photos, wines?
+- upgrade to node 24
+- chore : update to angular 20
+    - confirm it works with ionic first
+- chore: try pnpm
+- is tab sufficient for showing all modes? Maybe leave off labels to have more room
+- use ion-text-area instead of textarea?
+- bug: chat component style is screwed up when putting in tab component
+    - I also removed tab-container class from gallery tab, but now you can scroll below the photos
+- mobile bug: toast doesn't work
+- don't show toast message if user closes camera
+- expose K for optimal results?
+- filter out search results at a certain threshold of relevance?
+- feature: stream responses on screen like how OpenAI works
