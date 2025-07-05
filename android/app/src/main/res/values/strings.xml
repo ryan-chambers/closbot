@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ClosBot</string>
+    <string name="title_activity_main">ClosBot</string>
+    <string name="package_name">com.ryanthink.closbot</string>
+    <string name="custom_url_scheme">com.ryanthink.closbot</string>
+</resources>
