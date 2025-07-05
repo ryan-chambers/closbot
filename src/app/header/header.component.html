@@ -1,0 +1,15 @@
+<ion-header [translucent]="true">
+  <ion-row>
+    <ion-toolbar>
+      <ion-title> {{ title }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-icon src="/assets/icon/config.svg"></ion-icon>
+        &nbsp;Real services? &nbsp;
+        <ion-toggle
+          [checked]="configService.isUsingRealServices()"
+          (ionChange)="toggleChange($event)"
+        ></ion-toggle>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-row>
+</ion-header>

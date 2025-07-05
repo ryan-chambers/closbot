@@ -1,0 +1,23 @@
+<app-tab [title]="'Add Review'">
+  <div class="review-holder">
+    <form [formGroup]="reviewForm">
+      <div class="textarea-container">
+        <textarea
+          formControlName="review"
+          placeholder="Enter wine review here..."
+          (keyup.enter)="submitReview()"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <div>
+        <ion-toggle formControlName="includePhoto"> Include photo?</ion-toggle>
+      </div>
+      <div>
+        <ion-button (click)="submitReview()" [disabled]="reviewForm.status !== 'VALID'">
+          Save notes</ion-button
+        >
+      </div>
+    </form>
+  </div>
+</app-tab>

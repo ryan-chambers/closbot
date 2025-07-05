@@ -1,0 +1,49 @@
+<app-header [title]="'Chat'"></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="tab-container">
+    <div class="chat-messages">
+      @for (message of chatService.messages(); track message.timestamp) {
+        <div
+          [ngClass]="{
+            'user-message': message.sender === 'user',
+            'system-message': message.sender === 'system',
+          }"
+        >
+          <div class="message-header">
+            <strong>{{ message.sender === 'user' ? 'You' : 'ClosBot' }}</strong>
+            <span class="timestamp">{{ message.timestamp | date: 'short' }}</span>
+          </div>
+          @if (message.sender === 'user') {
+            <div class="message-content user-content">{{ message.content }}</div>
+          } @else {
+            <div class="message-content system-content">
+              <markdown [data]="message.content"></markdown>
+            </div>
+          }
+        </div>
+      }
+
+      @if (waiting()) {
+        <div class="system-message">
+          <div class="loading-indicator">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="textarea-container textarea-container-top">
+      <textarea
+        [(ngModel)]="currentMessage"
+        placeholder="Type your message here..."
+        (keyup.enter)="sendMessage()"
+        rows="3"
+      ></textarea>
+      <ion-button (click)="sendMessage()" [disabled]="!currentMessage.trim()">Send</ion-button>
+      <ion-button (click)="clearChat()">New</ion-button>
+    </div>
+  </div>
+</ion-content>

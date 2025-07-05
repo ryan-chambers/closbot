@@ -1,0 +1,93 @@
+import { Injectable } from '@angular/core';
+import OpenAI from 'openai';
+import { environment } from '../environments/environment';
+import { WineContext } from '../models/wines.model';
+import { createChatSystemPrompt, createMenuSummarySystemPrompt } from './prompt-helper.util';
+
+/**
+ * Encapsulates OpenAI client as well as which prompts to use for different
+ * use cases.
+ */
+@Injectable({
+  providedIn: 'root',
+})
+export class OpenAiService {
+  previousResponseId: string | null = null;
+
+  initSession() {
+    this.previousResponseId = null;
+  }
+
+  openAiClient = new OpenAI({
+    // NOTE: environment.ts is deliberately excluded from source control so that this key
+    // is not available on github.
+    // This app will never be deployed to an app store, so this is not a security risk.
+    apiKey: environment.OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true,
+  });
+
+  embedVector(query: string): Promise<number[]> {
+    return this.openAiClient.embeddings
+      .create({ model: 'text-embedding-ada-002', input: query })
+      .then((res) => {
+        return res.data[0].embedding;
+      });
+  }
+
+  async invokeChat(userMessage: string, context: WineContext): Promise<string> {
+    const instructions = createChatSystemPrompt(context);
+
+    console.log(`Instructions: ${instructions}`);
+    const response = await this.openAiClient.responses.create({
+      model: 'gpt-4o',
+      input: userMessage,
+      instructions,
+      previous_response_id: this.previousResponseId,
+    });
+
+    this.previousResponseId = response.id;
+    return response.output_text;
+  }
+
+  async readWineMenuPhoto(base64Image: string): Promise<string> {
+    const response = await this.openAiClient.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image_url',
+              image_url: {
+                url: base64Image,
+              },
+            },
+            {
+              type: 'text',
+              // TODO move to prompt helper?
+              text: 'You are a sommelier reading a wine list. Please review the menu in the photo and provide a summary of the wines listed. Include the name, region, and any other relevant information. Please do not include any other text or formatting.',
+            },
+          ],
+        },
+      ],
+    });
+
+    console.log(response.choices[0].message.content);
+
+    return response.choices[0].message.content ?? '';
+  }
+
+  async summarizeWineMenu(menu: string, context: WineContext): Promise<string> {
+    const instructions = createMenuSummarySystemPrompt(context);
+
+    const response = await this.openAiClient.responses.create({
+      model: 'gpt-4o',
+      input: menu,
+      instructions,
+    });
+
+    console.log(`Response: ${response.output_text}`);
+
+    return response.output_text;
+  }
+}

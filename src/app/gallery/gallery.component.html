@@ -1,0 +1,17 @@
+<app-tab [title]="'Gallery'">
+  <ion-grid>
+    <ion-row>
+      @for (photo of winePhotos(); track photo.filepath) {
+        <ion-col size="6">
+          <ion-img [src]="photo.webviewPath"></ion-img>
+          <p>{{ photo.wineDetails }}</p>
+        </ion-col>
+      }
+      @if (winePhotos().length === 0) {
+        <ion-col size="12">
+          <p>No photos available.</p>
+        </ion-col>
+      }
+    </ion-row>
+  </ion-grid>
+</app-tab>
