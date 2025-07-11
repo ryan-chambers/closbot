@@ -62,10 +62,16 @@ export class VintageReportComponent {
 
   vintages: VintageReport[] = [
     {
+      year: 2023,
+      red: 'TBD',
+      white: 'TBD',
+      notes: 'Not as good as 2022',
+    },
+    {
       year: 2022,
       red: 'Ripe, balanced, open-knit',
       white: 'Generous yet fresh',
-      notes: 'Good to excellent vintage',
+      notes: 'Excellent vintage',
     },
     {
       year: 2021,
