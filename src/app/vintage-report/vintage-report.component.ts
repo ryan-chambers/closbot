@@ -65,13 +65,13 @@ export class VintageReportComponent {
       year: 2023,
       red: 'TBD',
       white: 'TBD',
-      notes: 'Not as good as 2022',
+      notes: 'A mixed vintage, with sometimes excessive yields',
     },
     {
       year: 2022,
       red: 'Ripe, balanced, open-knit',
       white: 'Generous yet fresh',
-      notes: 'Excellent vintage',
+      notes: 'A dream year',
     },
     {
       year: 2021,
