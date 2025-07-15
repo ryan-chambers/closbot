@@ -2,7 +2,6 @@
     - using OpenAI for now, since that is API I have access to already
     - compare different models and their price
     - OpenAI dropped model price for o-3
-- enhancement: add an option to show all LLM requests, RAG responses
 - enhancement: add pagination (or thumbnails?) to gallery?
     - or cap at last, say, 10 wines... but then delete older ones that can't be viewed
 - mode: wine map, using leaflet
