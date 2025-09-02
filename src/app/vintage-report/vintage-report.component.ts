@@ -63,7 +63,7 @@ export class VintageReportComponent {
   vintages: VintageReport[] = [
     {
       year: 2024,
-      red: 'TBD',
+      red: 'Aside from the best reds, the full-bodied, fruity reds should be drunk young',
       white: 'TBD',
       notes: "A cooler year, neither particularly good nor bad. A winegrower's vintage",
     },
