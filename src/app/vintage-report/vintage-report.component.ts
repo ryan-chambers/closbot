@@ -62,21 +62,27 @@ export class VintageReportComponent {
 
   vintages: VintageReport[] = [
     {
+      year: 2024,
+      red: '17/20. Aside from the best reds, the full-bodied, fruity reds should be drunk young',
+      white: '17.5/20. Better in Yonne, Challonaise, Maconnais',
+      notes: "A cooler year, neither particularly good nor bad. A winegrower's vintage",
+    },
+    {
       year: 2023,
-      red: 'TBD',
-      white: 'TBD',
+      red: '15/20',
+      white: '13/20',
       notes: 'A mixed vintage, with sometimes excessive yields',
     },
     {
       year: 2022,
-      red: 'Ripe, balanced, open-knit',
-      white: 'Generous yet fresh',
-      notes: 'A dream year',
+      red: '19/20. Ripe, balanced, open-knit',
+      white: '17/20. Generous yet fresh',
+      notes: '⭐ A dream year',
     },
     {
       year: 2021,
-      red: 'Light-bodied, delicate, classical; modest concentration',
-      white: 'Bright but lean, some are sharp or dilute',
+      red: '13/20. Light-bodied, delicate, classical; modest concentration',
+      white: '14/20. Bright but lean, some are sharp or dilute',
       notes: '⚠️ Frost-ravaged, cool',
     },
     {
