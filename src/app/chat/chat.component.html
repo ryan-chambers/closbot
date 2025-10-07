@@ -44,6 +44,7 @@
       ></textarea>
       <ion-button (click)="sendMessage()" [disabled]="!currentMessage.trim()">Send</ion-button>
       <ion-button (click)="clearChat()">New</ion-button>
+      <ion-button (click)="flagChat()" [disabled]="!enableFlagButton()">Flag</ion-button>
     </div>
   </div>
 </ion-content>

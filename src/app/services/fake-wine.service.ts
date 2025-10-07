@@ -1,15 +1,23 @@
 import { inject, Injectable } from '@angular/core';
 import { WineServiceInterface } from './wine.service';
 import { ToastService } from './toast.service';
+import { ResponseLogService } from './response-log.service';
+import { ResponseContext, TrackResponse } from './track-response.decorator';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FakeWineService implements WineServiceInterface {
   private toastService = inject(ToastService);
+  responseLogService = inject(ResponseLogService);
+
+  async flagResponse(): Promise<void> {
+    this.responseLogService.recordResponseLogs();
+  }
 
   initSession(): void {}
 
+  @TrackResponse(ResponseContext.CHAT_RESPONSE)
   async invokeChat(_: string): Promise<string> {
     console.log('FakeWineService invoked');
     return new Promise((resolve) => {
@@ -48,6 +56,7 @@ export class FakeWineService implements WineServiceInterface {
 
 **Recommendation**: If your dinner leans towards richer dishes, the **Corton-Charlemagne Grand Cru 2018 by Jean-Baptiste Boudier** could be an exceptional choice, offering complexity and a savory finish. For a lighter fare, the **Pernand-Vergelesses 2020 by Bruno Clair** offers brightness and mineral freshness, perfect for complementing more delicate dishes.`;
 
+  @TrackResponse(ResponseContext.WINE_MENU_TEXT)
   async readWineMenu(_base64Image: string): Promise<string> {
     return new Promise((resolve) => {
       setTimeout(() => {

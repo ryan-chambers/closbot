@@ -3,6 +3,8 @@ import { PineconeService } from './pinecone.service';
 import { OpenAiService } from './openai.service';
 import { WineServiceInterface } from './wine.service';
 import { WineContext } from '../models/wines.model';
+import { ResponseContext, TrackResponse } from './track-response.decorator';
+import { ResponseLogService } from './response-log.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +12,9 @@ import { WineContext } from '../models/wines.model';
 export class AiWineService implements WineServiceInterface {
   private pineconeService = inject(PineconeService);
   private openAiService = inject(OpenAiService);
+  responseLogService = inject(ResponseLogService);
 
+  @TrackResponse(ResponseContext.CHAT_RESPONSE)
   async invokeChat(userMessage: string): Promise<string> {
     const wineContext = await this.pineconeService.getContextForQuery(userMessage);
 
@@ -27,6 +31,7 @@ export class AiWineService implements WineServiceInterface {
     this.pineconeService.upsertWineReview(review);
   }
 
+  @TrackResponse(ResponseContext.WINE_MENU_TEXT)
   async readWineMenu(base64Image: string): Promise<string> {
     // 1. read menu image
     const menuText = await this.openAiService.readWineMenuPhoto(base64Image);
@@ -40,5 +45,9 @@ export class AiWineService implements WineServiceInterface {
     const response = await this.openAiService.summarizeWineMenu(menuText, wineContext);
 
     return response;
+  }
+
+  async flagResponse(): Promise<void> {
+    this.responseLogService.recordResponseLogs();
   }
 }

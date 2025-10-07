@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom, from, map, Observable, switchMap, tap } from 'rxjs';
 import { environment } from '../environments/environment';
 import { OpenAiService } from './openai.service';
 import { ToastService } from './toast.service';
 import { WineContext } from '../models/wines.model';
+import { ResponseContext, TrackResponse } from './track-response.decorator';
+import { ResponseLogService } from './response-log.service';
 
 interface PineconeResponse {
   matches: Match[];
@@ -36,6 +38,7 @@ enum WineInfoSource {
 })
 export class PineconeService {
   private readonly pineconeHost = environment.PINECONE_HOST;
+  responseLogService = inject(ResponseLogService);
 
   constructor(
     private readonly http: HttpClient,
@@ -81,6 +84,11 @@ export class PineconeService {
     );
   }
 
+  @TrackResponse({
+    context: ResponseContext.RAG_CONTEXT,
+    serializer: (val: WineContext) =>
+      `Personal Reviews: ${val.personalReviews.join('; ')} | Other Context: ${val.otherContext.join('; ')}`,
+  })
   async getContextForQuery(query: string): Promise<WineContext> {
     const ragContext: PineconeWineContext[] = await this.getRagData(query);
 
