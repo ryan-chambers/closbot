@@ -5,7 +5,7 @@ describe('PromptHelperUtil', () => {
     it('should return a system prompt when no other context is available', () => {
       const result = createChatSystemPrompt({ otherContext: [], personalReviews: [] });
       expect(result).toBe(
-        'You are a sommelier with an expertise in wine from Burgundy. You are acting as my personal assistant. You will help answer any questions or comments about wine. Please return only text with no other formatting or markdown.',
+        'You are a sommelier with an expertise in wine from Burgundy. You are acting as my personal assistant. You will help answer any questions or comments about wine. Please return text with only markdown formatting.',
       );
     });
 

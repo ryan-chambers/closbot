@@ -11,3 +11,5 @@
 - expose K for optimal results?
 - filter out search results at a certain threshold of relevance?
 - feature: stream responses on screen like how OpenAI works
+- figure out why angular-cli is broken. Due to ionic somehow
+- add more eslint

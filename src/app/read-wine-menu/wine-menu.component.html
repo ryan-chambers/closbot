@@ -1,10 +1,11 @@
 <app-tab [title]="'Read Wine Menu'">
   <div class="container">
-    @if (loading) {
+    @if (loading()) {
       <ion-skeleton-text animated style="width: 100%; height: 100px"></ion-skeleton-text>
-    } @else if (menuRecommendation) {
-      <markdown [data]="menuRecommendation"></markdown>
+    } @else if (menuRecommendation()) {
+      <markdown [data]="menuRecommendation()"></markdown>
     }
   </div>
   <ion-button (click)="readMenu()">Read Wine Menu</ion-button>
+  <ion-button (click)="flagChat()" [disabled]="!enableFlagButton()">Flag</ion-button>
 </app-tab>

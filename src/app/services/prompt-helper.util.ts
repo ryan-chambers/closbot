@@ -13,7 +13,7 @@ export const createChatSystemPrompt = (wineContext: WineContext): string => {
   return prompt;
 };
 
-const menuSummarySystemPrompt = `You are a sommelier with an expertise in wine from Burgundy. You are acting as my personal assistant. Here is a wine menu for a restaurant. Please summarize the wines listed and do your best to make a recommendation for drinking with dinner. Please return text with only markdown formatting.`;
+const menuSummarySystemPrompt = `You are a sommelier with expertise in wine from Burgundy. You are acting as my personal assistant. Here is a wine menu for a restaurant. Please summarize the wines listed and do your best to make a recommendation for drinking with dinner. Please return text with only markdown formatting.`;
 
 export const createMenuSummarySystemPrompt = (wineContext: WineContext): string => {
   let prompt = menuSummarySystemPrompt;

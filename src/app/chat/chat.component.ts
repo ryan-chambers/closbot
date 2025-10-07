@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { IonContent, IonButton } from '@ionic/angular/standalone';
 import { ChatService } from '../services/chat.service';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +10,6 @@ import { HeaderComponent } from '../header/header.component';
   selector: 'app-chat',
   templateUrl: 'chat.component.html',
   styleUrls: ['chat.component.scss'],
-
   imports: [CommonModule, FormsModule, HeaderComponent, IonButton, IonContent, MarkdownComponent],
 })
 export class ChatComponent {
@@ -18,6 +17,7 @@ export class ChatComponent {
 
   currentMessage: string = '';
   waiting = signal(false);
+  enableFlagButton = signal(false);
 
   sendMessage(): void {
     if (this.currentMessage.trim()) {
@@ -32,6 +32,7 @@ export class ChatComponent {
     this.currentMessage = '';
     this.chatService.initChatSession();
     this.scrollToBottom();
+    this.enableFlagButton.set(false);
   }
 
   private async getChatResponse(userMessage: string) {
@@ -39,6 +40,7 @@ export class ChatComponent {
     await this.chatService.invokeChat(userMessage);
 
     this.waiting.set(false);
+    this.enableFlagButton.set(true);
 
     this.scrollToBottom();
   }
@@ -51,5 +53,10 @@ export class ChatComponent {
         chatContainer.scrollTop = chatContainer.scrollHeight;
       }
     });
+  }
+
+  flagChat() {
+    this.chatService.flagChat();
+    this.enableFlagButton.set(false);
   }
 }
