@@ -1,3 +1,4 @@
+- really need to use this a lot to see where more work is required
 - decide LLM model
     - using OpenAI for now, since that is API I have access to already
     - compare different models and their price

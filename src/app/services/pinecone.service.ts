@@ -24,14 +24,12 @@ interface Metadata {
 }
 
 interface PineconeWineContext {
-  source: WineInfoSource;
+  source: string;
   info: string;
 }
 
-enum WineInfoSource {
-  PERSONAL = 'personal reviews',
-  NEW_FRENCH_WINE = 'New French Wine',
-}
+const PERSONAL = 'My Notes';
+const PERSONAL_U = PERSONAL.toUpperCase();
 
 @Injectable({
   providedIn: 'root',
@@ -57,7 +55,7 @@ export class PineconeService {
       {
         id: `personal-reviews-${Date.now()}`,
         values: embedding,
-        metadata: { chunk: review, source: WineInfoSource.PERSONAL },
+        metadata: { chunk: review, source: PERSONAL },
       },
     ];
     const headers = new HttpHeaders({
@@ -74,7 +72,7 @@ export class PineconeService {
         .pipe(
           tap((response) => {
             console.log('Upsert response:', response);
-            if (response['upsertedCount'] == 1) {
+            if (response['upsertedCount'] === 1) {
               this.toastService.showToast('Review successfully added');
             } else {
               this.toastService.showToast('Error upserting review');
@@ -94,10 +92,10 @@ export class PineconeService {
 
     const result = { personalReviews: new Array<string>(), otherContext: new Array<string>() };
     ragContext.forEach((context) => {
-      if (context.source === WineInfoSource.PERSONAL) {
+      if (context.source.toUpperCase() === PERSONAL_U) {
         result.personalReviews.push(context.info);
-      } else if (context.source === WineInfoSource.NEW_FRENCH_WINE) {
-        result.otherContext.push(context.info);
+      } else {
+        result.otherContext.push(`${context.info} (Source: ${context.source})`);
       }
     });
 
@@ -133,7 +131,7 @@ export class PineconeService {
             map((response: PineconeResponse) => {
               return response.matches.map((match) => {
                 return {
-                  source: match.metadata.source as WineInfoSource,
+                  source: match.metadata.source,
                   info: match.metadata.chunk,
                 };
               });
