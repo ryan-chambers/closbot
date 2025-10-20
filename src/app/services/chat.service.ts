@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, computed } from '@angular/core';
 import { ChatMessage } from '../models/chat.model';
 import { WineService } from './wine.service';
 
@@ -12,6 +12,9 @@ export class ChatService {
   wineService = inject(WineService);
 
   messages = signal<ChatMessage[]>([]);
+  // computed signal to control whether the flag button should be enabled in the UI
+  // enabled when there is at least one message in the chat
+  enableFlagButton = computed(() => this.messages().length > 0);
 
   constructor() {
     this.initChatSession();
@@ -47,7 +50,6 @@ export class ChatService {
     const response = await this.wineService.invokeChat(userMessage);
     this.addSystemMessage(response);
   }
-
   async flagChat(): Promise<void> {
     return await this.wineService.flagChat();
   }

@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MarkdownComponent } from 'ngx-markdown';
 import { HeaderComponent } from '../header/header.component';
+import { CameraService } from '../services/camera.service';
+import { WineService } from '../services/wine.service';
 
 @Component({
   selector: 'app-chat',
@@ -14,10 +16,11 @@ import { HeaderComponent } from '../header/header.component';
 })
 export class ChatComponent {
   chatService = inject(ChatService);
+  cameraService = inject(CameraService);
+  wineService = inject(WineService);
 
   currentMessage: string = '';
   waiting = signal(false);
-  enableFlagButton = signal(false);
 
   sendMessage(): void {
     if (this.currentMessage.trim()) {
@@ -32,7 +35,6 @@ export class ChatComponent {
     this.currentMessage = '';
     this.chatService.initChatSession();
     this.scrollToBottom();
-    this.enableFlagButton.set(false);
   }
 
   private async getChatResponse(userMessage: string) {
@@ -40,7 +42,7 @@ export class ChatComponent {
     await this.chatService.invokeChat(userMessage);
 
     this.waiting.set(false);
-    this.enableFlagButton.set(true);
+    // enableFlagButton is computed from messages(); no manual set required
 
     this.scrollToBottom();
   }
@@ -57,6 +59,34 @@ export class ChatComponent {
 
   flagChat() {
     this.chatService.flagChat();
-    this.enableFlagButton.set(false);
+  }
+
+  /**
+   * Take a photo of a wine menu, send it to the wine service for
+   * parsing/recommendation, and append the result to the chat as a
+   * system message.
+   */
+  async readMenu(): Promise<void> {
+    try {
+      this.waiting.set(true);
+
+      const image = await this.cameraService.takePhotoAsBase64();
+      if (!image) {
+        // user cancelled or no image returned
+        this.chatService.addSystemMessage('No image captured.');
+        return;
+      }
+
+      const recommendation = await this.wineService.readWineMenu(image);
+      // Append the recommendation into the chat stream
+      this.chatService.addSystemMessage(recommendation);
+      // enableFlagButton is computed from messages(); no manual set required
+    } catch (err: any) {
+      const msg = err?.message ?? String(err);
+      this.chatService.addSystemMessage(`Failed to read menu: ${msg}`);
+    } finally {
+      this.waiting.set(false);
+      this.scrollToBottom();
+    }
   }
 }

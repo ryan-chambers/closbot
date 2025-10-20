@@ -3,12 +3,16 @@
     <ion-toolbar>
       <ion-title> {{ title }}</ion-title>
       <ion-buttons slot="end">
+        <ion-button (click)="chatService.flagChat()" [disabled]="!chatService.enableFlagButton()">
+          <ion-icon slot="icon-only" color="primary" name="flag"></ion-icon>
+        </ion-button>
         <ion-icon src="/assets/icon/config.svg"></ion-icon>
         &nbsp;Real services? &nbsp;
         <ion-toggle
           [checked]="configService.isUsingRealServices()"
           (ionChange)="toggleChange($event)"
         ></ion-toggle>
+        &nbsp;
       </ion-buttons>
     </ion-toolbar>
   </ion-row>

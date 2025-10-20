@@ -68,6 +68,9 @@ importers:
       '@types/node':
         specifier: ^22.13.14
         version: 22.16.0
+      ionicons:
+        specifier: ^8.0.13
+        version: 8.0.13
       marked:
         specifier: ^16.4.0
         version: 16.4.0
@@ -3888,6 +3891,9 @@ packages:
 
   ionicons@7.4.0:
     resolution: {integrity: sha512-ZK94MMqgzMCPPMhmk8Ouu6goyVHFIlw/ACP6oe3FrikcI0N7CX0xcwVaEbUc0G/v3W0shI93vo+9ve/KpvcNhQ==}
+
+  ionicons@8.0.13:
+    resolution: {integrity: sha512-2QQVyG2P4wszne79jemMjWYLp0DBbDhr4/yFroPCxvPP1wtMxgdIV3l5n+XZ5E9mgoXU79w7yTWpm2XzJsISxQ==}
 
   ip-address@9.0.5:
     resolution: {integrity: sha512-zHtQzGojZXTwZTHQqra+ETKd4Sn3vgi7uBmlPoXVWZqYvuKmtI0l/VZTjqGmJY9x88GGOaZ9+G9ES8hC4T4X8g==}
@@ -10514,6 +10520,10 @@ snapshots:
     optional: true
 
   ionicons@7.4.0:
+    dependencies:
+      '@stencil/core': 4.35.3
+
+  ionicons@8.0.13:
     dependencies:
       '@stencil/core': 4.35.3
 
