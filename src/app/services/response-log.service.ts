@@ -41,14 +41,18 @@ export class ResponseLogService {
   }
 
   recordResponseLogs() {
+    if (this.list().length === 0) {
+      return;
+    }
+
     const responseLog = this.list()
       .map((r) => `${r.context} : ${r.text}`)
       .join('\n');
 
     if (this.platform.is('android')) {
-      const updateTime = new Date().toISOString().replace(/[:.]/g, '-');
+      const logLine = this.generateLogFileLine(responseLog);
       Filesystem.appendFile({
-        data: `${updateTime}: \n ${responseLog}`,
+        data: logLine,
         directory: Directory.Documents,
         path: 'llm_logs.txt',
         encoding: Encoding.UTF8,
@@ -58,6 +62,12 @@ export class ResponseLogService {
     }
 
     this.clear();
+  }
+
+  private generateLogFileLine(responseLog: string): string {
+    const updateTime = new Date().toString().slice(0, 24);
+
+    return `${updateTime}:\n ${responseLog}`;
   }
 
   clear() {

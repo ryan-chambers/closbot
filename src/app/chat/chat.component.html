@@ -38,13 +38,13 @@
     <div class="textarea-container textarea-container-top">
       <textarea
         [(ngModel)]="currentMessage"
-        placeholder="Type your message here..."
+        placeholder="Ask here..."
         (keyup.enter)="sendMessage()"
         rows="3"
       ></textarea>
       <ion-button (click)="sendMessage()" [disabled]="!currentMessage.trim()">Send</ion-button>
       <ion-button (click)="clearChat()">New</ion-button>
-      <ion-button (click)="flagChat()" [disabled]="!enableFlagButton()">Flag</ion-button>
+      <ion-button (click)="readMenu()" [disabled]="waiting()">Menu</ion-button>
     </div>
   </div>
 </ion-content>

@@ -20,11 +20,6 @@ export const routes: Routes = [
         loadComponent: () => import('../gallery/gallery.component').then((m) => m.GalleryComponent),
       },
       {
-        path: 'wine-menu',
-        loadComponent: () =>
-          import('../read-wine-menu/wine-menu.component').then((m) => m.WineMenu),
-      },
-      {
         path: 'vintage',
         loadComponent: () =>
           import('../vintage-report/vintage-report.component').then(

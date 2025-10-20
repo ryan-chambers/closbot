@@ -16,8 +16,11 @@ describe('PromptHelperUtil', () => {
       });
 
       expect(result).toContain(
-        'You have access to some of my additional notes: other context 1, other context 2. Make sure to include it if it is relevant.',
+        'You are a sommelier with an expertise in wine from Burgundy. You are acting as my personal assistant. You will help answer any questions or comments about wine. Please return text with only markdown formatting.',
       );
+      expect(result).toContain('other context 1');
+      expect(result).toContain('other context 2');
+      expect(result).toContain('I really enjoyed this.');
     });
   });
 });
