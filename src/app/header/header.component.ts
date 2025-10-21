@@ -4,9 +4,7 @@ import {
   IonButtons,
   IonHeader,
   IonIcon,
-  IonLabel,
   IonRow,
-  IonTabButton,
   IonTitle,
   IonToggle,
   IonToolbar,
@@ -18,18 +16,7 @@ import { ChatService } from '../services/chat.service';
   selector: 'app-header',
   templateUrl: './header.component.html',
   standalone: true,
-  imports: [
-    IonButtons,
-    IonHeader,
-    IonIcon,
-    IonLabel,
-    IonRow,
-    IonTabButton,
-    IonToggle,
-    IonTitle,
-    IonToolbar,
-    IonButton,
-  ],
+  imports: [IonButtons, IonHeader, IonIcon, IonRow, IonToggle, IonTitle, IonToolbar, IonButton],
 })
 export class HeaderComponent {
   @Input() title!: string;

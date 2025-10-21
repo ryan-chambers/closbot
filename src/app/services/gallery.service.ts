@@ -1,9 +1,10 @@
-import { Injectable, signal } from '@angular/core';
-import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
+import { inject, Injectable, signal } from '@angular/core';
+import { Photo } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
 import { Platform } from '@ionic/angular';
+import { CameraService } from './camera.service';
 
 export interface WinePhoto {
   filepath: string;
@@ -15,25 +16,21 @@ export interface WinePhoto {
   providedIn: 'root',
 })
 export class GalleryService {
-  private platform: Platform;
+  cameraService = inject(CameraService);
+
+  platform = inject(Platform);
 
   winePhotos = signal<WinePhoto[]>([]);
 
   private WINE_PHOTO_STORAGE: string = 'winePhotos';
 
-  constructor(platform: Platform) {
-    this.platform = platform;
-  }
-
-  public async addNewToGallery(details: string) {
+  public async addNewToGallery(details: string): Promise<boolean> {
     console.log('Adding photo to gallery with details ' + details);
-    // Take a photo
-    const capturedPhoto = await Camera.getPhoto({
-      resultType: CameraResultType.Uri,
-      source: CameraSource.Camera,
-      width: 512,
-      quality: 60,
-    });
+    const capturedPhoto = await this.cameraService.takePhoto();
+
+    if (!capturedPhoto) {
+      return Promise.resolve(false);
+    }
 
     // Save the picture and add it to gallery
     const savedImageFile = await this.savePicture(capturedPhoto);
@@ -48,6 +45,8 @@ export class GalleryService {
       key: this.WINE_PHOTO_STORAGE,
       value: JSON.stringify(photos),
     });
+
+    return Promise.resolve(true);
   }
 
   public async loadSaved() {

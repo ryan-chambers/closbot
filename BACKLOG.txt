@@ -1,4 +1,5 @@
 - really need to use this a lot to see where more work is required
+- mobile bug: gallery, add review tabs scroll vertically
 - decide LLM model
     - using OpenAI for now, since that is API I have access to already
     - compare different models and their price
@@ -8,9 +9,11 @@
 - mode: wine map, using leaflet
 - is tab sufficient for showing all modes? Maybe leave off labels to have more room
 - use ion-text-area instead of textarea?
-- don't show toast message if user closes camera
 - expose K for optimal results?
 - filter out search results at a certain threshold of relevance?
 - feature: stream responses on screen like how OpenAI works
 - figure out why angular-cli is broken. Due to ionic somehow
 - add more eslint
+
+DONE
+- don't show toast message if user closes camera

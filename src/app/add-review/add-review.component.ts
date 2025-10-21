@@ -11,6 +11,7 @@ import { WineService } from '../services/wine.service';
 import { GalleryService } from '../services/gallery.service';
 import { IonButton, IonToggle } from '@ionic/angular/standalone';
 import { TabComponent } from '../tab/tab.component';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-add-review',
@@ -22,6 +23,7 @@ import { TabComponent } from '../tab/tab.component';
 export class AddReviewComponent {
   galleryService = inject(GalleryService);
   wineService = inject(WineService);
+  toastService = inject(ToastService);
 
   reviewForm: FormGroup;
 
@@ -35,8 +37,13 @@ export class AddReviewComponent {
   submitReview() {
     const review = this.reviewForm.controls['review'].value;
     if (this.reviewForm.controls['includePhoto'].value) {
-      this.galleryService.addNewToGallery(review).then(() => {
-        this.submitWineReview(review);
+      this.galleryService.addNewToGallery(review).then((savedPhoto) => {
+        if (savedPhoto) {
+          this.submitWineReview(review);
+          return;
+        } else {
+          this.toastService.showToast('Since no photo was taken, review was not submitted.');
+        }
       });
     } else {
       this.submitWineReview(review);
