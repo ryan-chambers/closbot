@@ -42,7 +42,6 @@ export class ChatComponent {
     await this.chatService.invokeChat(userMessage);
 
     this.waiting.set(false);
-    // enableFlagButton is computed from messages(); no manual set required
 
     this.scrollToBottom();
   }
@@ -73,14 +72,11 @@ export class ChatComponent {
       const image = await this.cameraService.takePhotoAsBase64();
       if (!image) {
         // user cancelled or no image returned
-        this.chatService.addSystemMessage('No image captured.');
         return;
       }
 
       const recommendation = await this.wineService.readWineMenu(image);
-      // Append the recommendation into the chat stream
       this.chatService.addSystemMessage(recommendation);
-      // enableFlagButton is computed from messages(); no manual set required
     } catch (err: any) {
       const msg = err?.message ?? String(err);
       this.chatService.addSystemMessage(`Failed to read menu: ${msg}`);
