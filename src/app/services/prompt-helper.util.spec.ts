@@ -11,8 +11,11 @@ describe('PromptHelperUtil', () => {
 
     it('should return a system prompt with other context if available', () => {
       const result = createChatSystemPrompt({
-        otherContext: ['other context 1', 'other context 2'],
-        personalReviews: ['I really enjoyed this.'],
+        otherContext: [
+          { content: 'other context 1', score: 75 },
+          { content: 'other context 2', score: 75 },
+        ],
+        personalReviews: [{ content: 'I really enjoyed this.', score: 90 }],
       });
 
       expect(result).toContain(

@@ -11,7 +11,7 @@ export class ToastService {
     const toast = await this.toastController.create({
       duration: 5000,
       message,
-      position: 'middle',
+      position: 'top',
     });
     await toast.present();
   }

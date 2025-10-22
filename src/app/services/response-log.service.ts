@@ -4,6 +4,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter, tap } from 'rxjs';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { ResponseContext } from './track-response.decorator';
+import { ToastService } from './toast.service';
 
 export interface ResponseLogEntry {
   context: ResponseContext | null;
@@ -15,6 +16,7 @@ export interface ResponseLogEntry {
 })
 export class ResponseLogService {
   platform = inject(Platform);
+  toastService = inject(ToastService);
 
   private responses: ResponseLogEntry[] = [];
 
@@ -49,8 +51,9 @@ export class ResponseLogService {
       .map((r) => `${r.context} : ${r.text}`)
       .join('\n');
 
+    const logLine = this.generateLogFileLine(responseLog);
+
     if (this.platform.is('android')) {
-      const logLine = this.generateLogFileLine(responseLog);
       Filesystem.appendFile({
         data: logLine,
         directory: Directory.Documents,
@@ -58,8 +61,10 @@ export class ResponseLogService {
         encoding: Encoding.UTF8,
       });
     } else {
-      console.log(responseLog);
+      console.log(logLine);
     }
+
+    this.toastService.showToast('Response log recorded');
 
     this.clear();
   }

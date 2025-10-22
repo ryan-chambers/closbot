@@ -1,5 +1,5 @@
 - really need to use this a lot to see where more work is required
-- mobile bug: gallery, add review tabs scroll vertically
+    - filter out search results at a certain threshold of relevance, try >= 90%
 - decide LLM model
     - using OpenAI for now, since that is API I have access to already
     - compare different models and their price
@@ -7,10 +7,8 @@
 - enhancement: add pagination (or thumbnails?) to gallery?
     - or cap at last, say, 10 wines... but then delete older ones that can't be viewed
 - mode: wine map, using leaflet
-- is tab sufficient for showing all modes? Maybe leave off labels to have more room
 - use ion-text-area instead of textarea?
 - expose K for optimal results?
-- filter out search results at a certain threshold of relevance?
 - feature: stream responses on screen like how OpenAI works
 - figure out why angular-cli is broken. Due to ionic somehow
 - add more eslint

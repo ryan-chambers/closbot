@@ -4,7 +4,7 @@ import { firstValueFrom, from, map, Observable, switchMap, tap } from 'rxjs';
 import { environment } from '../environments/environment';
 import { OpenAiService } from './openai.service';
 import { ToastService } from './toast.service';
-import { WineContext } from '../models/wines.model';
+import { WineContext, WineReview } from '../models/wines.model';
 import { ResponseContext, TrackResponse } from './track-response.decorator';
 import { ResponseLogService } from './response-log.service';
 
@@ -24,12 +24,21 @@ interface Metadata {
 }
 
 interface PineconeWineContext {
+  score: number;
   source: string;
   info: string;
 }
 
 const PERSONAL = 'My Notes';
 const PERSONAL_U = PERSONAL.toUpperCase();
+
+function serializeReview(review: WineReview): string {
+  return `${review.content} Score: ${review.score}`;
+}
+
+export const serializeWineContext = (val: WineContext): string => {
+  return `Personal Reviews: ${val.personalReviews.map((r) => serializeReview(r)).join('; ')} | Other Context: ${val.otherContext.map((r) => serializeReview(r)).join('; ')}`;
+};
 
 @Injectable({
   providedIn: 'root',
@@ -84,22 +93,27 @@ export class PineconeService {
 
   @TrackResponse({
     context: ResponseContext.RAG_CONTEXT,
-    serializer: (val: WineContext) =>
-      `Personal Reviews: ${val.personalReviews.join('; ')} | Other Context: ${val.otherContext.join('; ')}`,
+    serializer: serializeWineContext,
   })
   async getContextForQuery(query: string): Promise<WineContext> {
     const ragContext: PineconeWineContext[] = await this.getRagData(query);
 
-    const result = { personalReviews: new Array<string>(), otherContext: new Array<string>() };
+    const result = {
+      personalReviews: new Array<WineReview>(),
+      otherContext: new Array<WineReview>(),
+    };
     ragContext.forEach((context) => {
       if (context.source.toUpperCase() === PERSONAL_U) {
-        result.personalReviews.push(context.info);
+        result.personalReviews.push({ content: context.info, score: context.score });
       } else {
-        result.otherContext.push(`${context.info} (Source: ${context.source})`);
+        result.otherContext.push({
+          content: `${context.info} (Source: ${context.source})`,
+          score: context.score,
+        });
       }
     });
 
-    console.log('RAG context:', result);
+    console.log('RAG context:', JSON.stringify(result));
     return result;
   }
 
@@ -131,6 +145,7 @@ export class PineconeService {
             map((response: PineconeResponse) => {
               return response.matches.map((match) => {
                 return {
+                  score: match.score,
                   source: match.metadata.source,
                   info: match.metadata.chunk,
                 };

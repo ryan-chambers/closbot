@@ -56,7 +56,7 @@ export class FakeWineService implements WineServiceInterface {
 
 **Recommendation**: If your dinner leans towards richer dishes, the **Corton-Charlemagne Grand Cru 2018 by Jean-Baptiste Boudier** could be an exceptional choice, offering complexity and a savory finish. For a lighter fare, the **Pernand-Vergelesses 2020 by Bruno Clair** offers brightness and mineral freshness, perfect for complementing more delicate dishes.`;
 
-  @TrackResponse(ResponseContext.WINE_MENU_TEXT)
+  @TrackResponse(ResponseContext.WINE_MENU_RECOMMENDATION)
   async readWineMenu(_base64Image: string): Promise<string> {
     return new Promise((resolve) => {
       setTimeout(() => {
