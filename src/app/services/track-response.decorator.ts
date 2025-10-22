@@ -4,6 +4,7 @@ import { ResponseLogService } from './response-log.service';
 export enum ResponseContext {
   CHAT_RESPONSE = 'CHAT_RESPONSE',
   WINE_MENU_TEXT = 'WINE_MENU_TEXT',
+  WINE_MENU_RECOMMENDATION = 'WINE_MENU_RECOMMENDATION',
   RAG_CONTEXT = 'RAG_CONTEXT',
 }
 
@@ -25,6 +26,10 @@ export type TrackResponseOptions<T> = {
  *  @TrackResponse(ResponseContext.CHAT_RESPONSE)
  *  or
  *  @TrackResponse({ context: ResponseContext.RAG_CONTEXT, serializer: v => v.text })
+ *
+ * <strong>Note:</strong> This decorator requires that the decorated method's class has
+ * a `responseLogService` property that is an instance of `ResponseLogService`. This can be
+ * provided via Angular's dependency injection or manually assigned.
  */
 export function TrackResponse(contextOrOptions: ResponseContext | TrackResponseOptions<any>) {
   return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {

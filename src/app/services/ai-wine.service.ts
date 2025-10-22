@@ -31,15 +31,13 @@ export class AiWineService implements WineServiceInterface {
     this.pineconeService.upsertWineReview(review);
   }
 
-  @TrackResponse(ResponseContext.WINE_MENU_TEXT)
+  @TrackResponse(ResponseContext.WINE_MENU_RECOMMENDATION)
   async readWineMenu(base64Image: string): Promise<string> {
     // 1. read menu image
     const menuText = await this.openAiService.readWineMenuPhoto(base64Image);
-    console.log('Menu:', menuText);
 
     // 2. get wine context
     const wineContext: WineContext = await this.pineconeService.getContextForQuery(menuText);
-    console.log('Wine context:', wineContext);
 
     // 3. summarize wine menu
     const response = await this.openAiService.summarizeWineMenu(menuText, wineContext);

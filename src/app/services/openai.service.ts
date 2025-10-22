@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import OpenAI from 'openai';
 import { environment } from '../environments/environment';
 import { WineContext } from '../models/wines.model';
 import { createChatSystemPrompt, createMenuSummarySystemPrompt } from './prompt-helper.util';
+import { ResponseContext, TrackResponse } from './track-response.decorator';
+import { ResponseLogService } from './response-log.service';
 
 /**
  * Encapsulates OpenAI client as well as which prompts to use for different
@@ -12,6 +14,8 @@ import { createChatSystemPrompt, createMenuSummarySystemPrompt } from './prompt-
   providedIn: 'root',
 })
 export class OpenAiService {
+  responseLogService = inject(ResponseLogService);
+
   previousResponseId: string | null = null;
 
   initSession() {
@@ -49,6 +53,7 @@ export class OpenAiService {
     return response.output_text;
   }
 
+  @TrackResponse(ResponseContext.WINE_MENU_TEXT)
   async readWineMenuPhoto(base64Image: string): Promise<string> {
     const response = await this.openAiClient.chat.completions.create({
       model: 'gpt-4o',
@@ -72,7 +77,7 @@ export class OpenAiService {
       ],
     });
 
-    console.log(response.choices[0].message.content);
+    console.log(`Reading of wine menu:`, response.choices[0].message.content);
 
     return response.choices[0].message.content ?? '';
   }
@@ -86,7 +91,7 @@ export class OpenAiService {
       instructions,
     });
 
-    console.log(`Response: ${response.output_text}`);
+    console.log(`Wine menu summary response: ${response.output_text}`);
 
     return response.output_text;
   }

@@ -50,6 +50,7 @@ export class ChatService {
     const response = await this.wineService.invokeChat(userMessage);
     this.addSystemMessage(response);
   }
+
   async flagChat(): Promise<void> {
     return await this.wineService.flagChat();
   }

@@ -1,4 +1,9 @@
+export interface WineReview {
+  score: number;
+  content: string;
+}
+
 export interface WineContext {
-  personalReviews: string[];
-  otherContext: string[];
+  personalReviews: WineReview[];
+  otherContext: WineReview[];
 }
