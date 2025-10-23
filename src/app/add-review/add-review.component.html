@@ -1,5 +1,7 @@
-<app-tab [title]="'Add Review'">
-  <div class="review-holder">
+<app-header [title]="'Add Review'"></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="tab-container">
     <form [formGroup]="reviewForm">
       <div class="textarea-container">
         <textarea
@@ -10,14 +12,16 @@
         ></textarea>
       </div>
 
-      <div>
-        <ion-toggle formControlName="includePhoto"> Include photo?</ion-toggle>
-      </div>
-      <div>
-        <ion-button (click)="submitReview()" [disabled]="reviewForm.status !== 'VALID'">
-          Save notes</ion-button
-        >
+      <div class="tab-content">
+        <div>
+          <ion-toggle formControlName="includePhoto"> Include photo?</ion-toggle>
+        </div>
+        <div>
+          <ion-button (click)="submitReview()" [disabled]="reviewForm.status !== 'VALID'">
+            Save notes</ion-button
+          >
+        </div>
       </div>
     </form>
   </div>
-</app-tab>
+</ion-content>

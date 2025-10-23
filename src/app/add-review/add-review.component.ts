@@ -9,15 +9,14 @@ import {
 } from '@angular/forms';
 import { WineService } from '../services/wine.service';
 import { GalleryService } from '../services/gallery.service';
-import { IonButton, IonToggle } from '@ionic/angular/standalone';
-import { TabComponent } from '../tab/tab.component';
+import { IonButton, IonContent, IonToggle } from '@ionic/angular/standalone';
 import { ToastService } from '../services/toast.service';
+import { HeaderComponent } from '../header/header.component';
 
 @Component({
   selector: 'app-add-review',
   templateUrl: 'add-review.component.html',
-  styleUrls: ['add-review.component.scss'],
-  imports: [CommonModule, FormsModule, IonButton, IonToggle, ReactiveFormsModule, TabComponent],
+  imports: [FormsModule, HeaderComponent, IonButton, IonContent, IonToggle, ReactiveFormsModule],
   standalone: true,
 })
 export class AddReviewComponent {
