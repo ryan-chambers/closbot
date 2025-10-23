@@ -1,4 +1,6 @@
-<app-tab [title]="'Gallery'">
+<app-header [title]="'Gallery'"></app-header>
+
+<ion-content [fullscreen]="true">
   <ion-grid>
     <ion-row>
       @for (photo of winePhotos(); track photo.filepath) {
@@ -14,4 +16,4 @@
       }
     </ion-row>
   </ion-grid>
-</app-tab>
+</ion-content>

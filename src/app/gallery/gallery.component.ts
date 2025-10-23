@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { IonImg, IonCol, IonRow, IonGrid } from '@ionic/angular/standalone';
+import { IonImg, IonCol, IonRow, IonGrid, IonContent } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { GalleryService } from '../services/gallery.service';
-import { TabComponent } from '../tab/tab.component';
+import { HeaderComponent } from '../header/header.component';
 
 @Component({
   selector: 'app-gallery',
   templateUrl: 'gallery.component.html',
-  imports: [IonCol, IonGrid, IonImg, IonRow, CommonModule, TabComponent],
+  imports: [HeaderComponent, IonCol, IonContent, IonGrid, IonImg, IonRow],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GalleryComponent {

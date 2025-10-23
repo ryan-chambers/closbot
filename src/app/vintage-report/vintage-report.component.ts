@@ -8,9 +8,10 @@ import {
   IonAccordionGroup,
   IonAccordion,
   IonLabel,
+  IonContent,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import { TabComponent } from '../tab/tab.component';
+import { HeaderComponent } from '../header/header.component';
 
 interface VintageReport {
   year: number;
@@ -31,16 +32,16 @@ interface WhenToDrink {
   templateUrl: 'vintage-report.component.html',
   styleUrls: ['vintage-report.component.scss'],
   imports: [
-    CommonModule,
+    HeaderComponent,
     IonAccordion,
     IonAccordionGroup,
+    IonContent,
     IonCol,
     IonGrid,
     IonItem,
     IonLabel,
     IonRow,
     IonText,
-    TabComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
