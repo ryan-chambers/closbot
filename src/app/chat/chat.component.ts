@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { IonContent, IonButton } from '@ionic/angular/standalone';
+import { IonContent, IonButton, IonTextarea } from '@ionic/angular/standalone';
 import { ChatService } from '../services/chat.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -12,7 +12,15 @@ import { WineService } from '../services/wine.service';
   selector: 'app-chat',
   templateUrl: 'chat.component.html',
   styleUrls: ['chat.component.scss'],
-  imports: [CommonModule, FormsModule, HeaderComponent, IonButton, IonContent, MarkdownComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    HeaderComponent,
+    IonButton,
+    IonContent,
+    IonTextarea,
+    MarkdownComponent,
+  ],
 })
 export class ChatComponent {
   chatService = inject(ChatService);

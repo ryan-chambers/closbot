@@ -11,6 +11,33 @@
   border-top: 1px solid var(--ion-color-light);
 }
 
+.textarea-container {
+  display: flex;
+  padding: 16px;
+}
+
+.button-container {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.button-container ion-button {
+  flex: 1 1 0;
+  min-width: 0; /* ensures buttons can shrink correctly */
+}
+
+@media (max-width: 540px) {
+  .textarea-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .textarea-container ion-button {
+    margin-left: 0;
+  }
+}
+
 .user-message,
 .system-message {
   padding: 12px;

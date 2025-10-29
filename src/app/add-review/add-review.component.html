@@ -3,17 +3,14 @@
 <ion-content [fullscreen]="true">
   <div class="tab-container">
     <form [formGroup]="reviewForm">
-      <div class="textarea-container">
-        <textarea
+      <div class="tab-content">
+        <ion-textarea
           formControlName="review"
           placeholder="Enter wine review here..."
           (keyup.enter)="submitReview()"
           rows="3"
-        ></textarea>
-      </div>
-
-      <div class="tab-content">
-        <div>
+        ></ion-textarea>
+        <div class="pt-8p">
           <ion-toggle formControlName="includePhoto"> Include photo?</ion-toggle>
         </div>
         <div>

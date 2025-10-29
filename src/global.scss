@@ -93,19 +93,6 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
 
-.textarea-container {
-  display: flex;
-  padding: 16px;
-}
-
-textarea {
-  flex: 1;
-  border: 1px solid var(--ion-color-light);
-  border-radius: 4px;
-  padding: 8px;
-  resize: none;
-}
-
 button {
   margin-left: 8px;
   padding: 0 16px;
@@ -134,4 +121,8 @@ button:disabled {
 
 .tab-content {
   padding: 16px;
+}
+
+.pt-8p {
+  padding-top: 8px;
 }
