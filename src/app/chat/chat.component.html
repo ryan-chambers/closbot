@@ -36,15 +36,17 @@
     </div>
 
     <div class="textarea-container textarea-container-top">
-      <textarea
+      <ion-textarea
         [(ngModel)]="currentMessage"
-        placeholder="Ask here..."
         (keyup.enter)="sendMessage()"
-        rows="3"
-      ></textarea>
-      <ion-button (click)="sendMessage()" [disabled]="!currentMessage.trim()">Send</ion-button>
-      <ion-button (click)="clearChat()">New</ion-button>
-      <ion-button (click)="readMenu()" [disabled]="waiting()">Menu</ion-button>
+        placeholder="Ask here..."
+      >
+      </ion-textarea>
+      <div class="button-container">
+        <ion-button (click)="sendMessage()" [disabled]="!currentMessage.trim()">Chat</ion-button>
+        <ion-button (click)="clearChat()">Clear</ion-button>
+        <ion-button (click)="readMenu()" [disabled]="waiting()">Read Menu</ion-button>
+      </div>
     </div>
   </div>
 </ion-content>
