@@ -16,6 +16,8 @@ import { ResponseLogService } from './response-log.service';
 export class OpenAiService {
   responseLogService = inject(ResponseLogService);
 
+  readonly embeddingModel = 'text-embedding-3-large';
+
   previousResponseId: string | null = null;
 
   initSession() {
@@ -32,7 +34,7 @@ export class OpenAiService {
 
   embedVector(query: string): Promise<number[]> {
     return this.openAiClient.embeddings
-      .create({ model: 'text-embedding-ada-002', input: query })
+      .create({ model: this.embeddingModel, input: query })
       .then((res) => {
         return res.data[0].embedding;
       });

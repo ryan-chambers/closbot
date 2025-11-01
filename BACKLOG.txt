@@ -1,11 +1,6 @@
-- really need to use this a lot to see where more work is required
-- determine if filtering out search results at a certain threshold of relevance, try >= 88%, would result in better performance
-    - 88% could be too high for some good matches
+- continue testing menu recommendations for false positives, finding actual RAG results
+- show current drinkability window for each vintage, based on scores in vintage report
 - incorporate reading the wine menu more organically into the chat. It will give a recommendation before I can put in the menu
-- RAG result accurate for chat, but not so much for reading menu
-- for RAG inquiry, should log my message as well
-- bug: got a false positive wine menu recommendation for Bouley/Volnay
-- if I don't take a picture, no wine note is upserted. Should I upsert the note anyway?
 - decide LLM model
     - using OpenAI for now, since that is API I have access to already
     - compare different models and their price
@@ -22,3 +17,4 @@ DONE
 - don't show toast message if user closes camera
 - use ion-text-area instead of textarea
 - chat keyboard area is too small on mobile; buttons should be moved to line below
+- for chat inquiry, should log my message as well

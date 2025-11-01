@@ -10,7 +10,6 @@ import {
   IonLabel,
   IonContent,
 } from '@ionic/angular/standalone';
-import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 
 interface VintageReport {

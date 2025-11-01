@@ -1,0 +1,25 @@
+- RAG result accurate for chat, but not so much for reading menu
+    - bug: got a false positive wine menu recommendation for Bouley/Volnay
+        - went away after new text encoding, but RAG matches were not still not returning anything relevant. None of the matches either had the same town or producer from the menu
+        - For a fake menu with actual matches, OpenAI did not hallucinate. Ie, could not reproduce the bug from another menu
+        - Needs more testing!
+    - need an alternative!
+        - an idea: when reading menu, return structured JSON response. One element of response would be winery name. Try querying pinecone one-by-one for each winery. This should work better because RAG is chunked based on producer. Would require more testing though. Could also return less search results if search by producer is more accurate. Also need to test querying by town vs. querying by producer.
+            X could query be batched -> No
+            - would searching by town be better? Probably not, because what does it matter if a different but bad producer is in the same town
+                - would it help to create a second town-based index?
+                    - much harder to update
+                    - but perhaps general town info is okay?. But this seems like a lot of work for a small improvement
+            - or perhaps try adding town to search metadata, and include that as well
+- could probably improve things by:
+    1. OpenAI returning menu in list, with producer as distinct element
+    2. Searching pinecone producer-by-producer
+    3. BUT this adds latency and expense, and another way to fail if OpenAI does not reliably parse the info
+    4. This is a last resort.
+
+- determine if filtering out search results at a certain threshold of relevance, try >= 88%, would result in better performance
+    - 88% could be too high for some good matches
+    - would have to be much later (~66%) after updating embedding
+    - try filtering by search terms in angular app too, if menu is ever returned row-by-row
+
+- if querying producer-by-producer, normalize search by removing 'Domaine' (tons of false positives)
