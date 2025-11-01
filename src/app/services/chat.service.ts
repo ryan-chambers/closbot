@@ -1,6 +1,8 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
 import { ChatMessage } from '../models/chat.model';
 import { WineService } from './wine.service';
+import { ResponseContext, TrackResponse } from './track-response.decorator';
+import { ResponseLogService } from './response-log.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +12,7 @@ import { WineService } from './wine.service';
  */
 export class ChatService {
   wineService = inject(WineService);
+  responseLogService = inject(ResponseLogService);
 
   messages = signal<ChatMessage[]>([]);
   // computed signal to control whether the flag button should be enabled in the UI
@@ -35,6 +38,7 @@ export class ChatService {
     this.messages.update((messages) => [...messages, systemMessage]);
   }
 
+  @TrackResponse(ResponseContext.USER_MESSAGE)
   addUserMessage(content: string) {
     const userMessage: ChatMessage = {
       content,
@@ -43,6 +47,9 @@ export class ChatService {
     };
 
     this.messages.update((messages) => [...messages, userMessage]);
+
+    // kind of a hack, but for now the decorator needs a return value to log
+    return content;
   }
 
   async invokeChat(userMessage: string): Promise<void> {

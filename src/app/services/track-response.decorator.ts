@@ -6,6 +6,7 @@ export enum ResponseContext {
   WINE_MENU_TEXT = 'WINE_MENU_TEXT',
   WINE_MENU_RECOMMENDATION = 'WINE_MENU_RECOMMENDATION',
   RAG_CONTEXT = 'RAG_CONTEXT',
+  USER_MESSAGE = 'USER_MESSAGE',
 }
 
 export type TrackResponseOptions<T> = {
