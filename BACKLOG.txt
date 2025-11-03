@@ -1,5 +1,4 @@
 - continue testing menu recommendations for false positives, finding actual RAG results
-- show current drinkability window for each vintage, based on scores in vintage report
 - incorporate reading the wine menu more organically into the chat. It will give a recommendation before I can put in the menu
 - decide LLM model
     - using OpenAI for now, since that is API I have access to already

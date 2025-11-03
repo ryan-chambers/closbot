@@ -22,7 +22,7 @@ export const routes: Routes = [
       {
         path: 'vintage',
         loadComponent: () =>
-          import('../vintage-report/vintage-report.component').then(
+          import('@components/vintage-report/vintage-report.component').then(
             (m) => m.VintageReportComponent,
           ),
       },

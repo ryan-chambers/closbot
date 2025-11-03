@@ -1,15 +1,15 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
   <!-- Menu outline -->
-  <rect x="16" y="10" width="32" height="44" rx="2" stroke="#8d0444" stroke-width="2" fill="none"/>
+  <rect x="16" y="10" width="32" height="44" rx="2" stroke="#DB4486" stroke-width="2" fill="none"/>
 
   <!-- Header bar -->
-  <rect x="20" y="14" width="24" height="6" rx="1" fill="#8d0444"/>
+  <rect x="20" y="14" width="24" height="6" rx="1" fill="#DB4486"/>
 
   <!-- Menu lines (representing text) -->
-  <rect x="20" y="24" width="18" height="2" fill="#8d0444"/>
-  <rect x="20" y="30" width="18" height="2" fill="#8d0444"/>
-  <rect x="20" y="36" width="18" height="2" fill="#8d0444"/>
-  <rect x="20" y="42" width="18" height="2" fill="#8d0444"/>
+  <rect x="20" y="24" width="18" height="2" fill="#DB4486"/>
+  <rect x="20" y="30" width="18" height="2" fill="#DB4486"/>
+  <rect x="20" y="36" width="18" height="2" fill="#DB4486"/>
+  <rect x="20" y="42" width="18" height="2" fill="#DB4486"/>
 
   <!-- Highlight icon (like a wine glass bullet or featured item) -->
   <circle cx="42" cy="25" r="2" fill="#ddc52c"/>
