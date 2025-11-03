@@ -1,0 +1,69 @@
+<app-header [title]="'Vintage Report'"></app-header>
+
+<ion-content [fullscreen]="true">
+  <ion-accordion-group value="first">
+    <ion-accordion value="first">
+      <ion-item slot="header">
+        <ion-label> Vintage Report </ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">
+        <ion-grid>
+          <ion-row>
+            <ion-col class="grid-heading">Year</ion-col>
+            <ion-col class="grid-heading">Reds</ion-col>
+            <ion-col class="grid-heading">Whites</ion-col>
+            <ion-col class="grid-heading">Notes</ion-col>
+          </ion-row>
+          @for (vintage of vintages; track vintage.year) {
+            <ion-row>
+              <ion-col>{{ vintage.year }}</ion-col>
+              <ion-col
+                ><ion-text color="primary">{{ vintage.red }}</ion-text
+                >&nbsp;
+                <app-wine-bottle-icon
+                  [color]="'red'"
+                  [drinkOrHold]="vintage.redDrinkHold"
+                ></app-wine-bottle-icon>
+              </ion-col>
+              <ion-col [class.premox]="showPremox(vintage.year)"
+                ><ion-text color="secondary">{{ vintage.white }}</ion-text
+                >&nbsp;<app-wine-bottle-icon
+                  [color]="'white'"
+                  [drinkOrHold]="vintage.whiteDrinkHold"
+                ></app-wine-bottle-icon>
+              </ion-col>
+              <ion-col>{{ vintage.notes }}</ion-col>
+            </ion-row>
+          }
+        </ion-grid>
+      </div>
+    </ion-accordion>
+    <ion-accordion value="second">
+      <ion-item slot="header"> <ion-label> Regional Guidelines </ion-label> </ion-item>
+      <div class="ion-padding" slot="content">
+        <ion-grid>
+          <ion-row>
+            <ion-col class="grid-heading">Year</ion-col>
+            <ion-col class="grid-heading">Reds</ion-col>
+            <ion-col class="grid-heading">Whites</ion-col>
+          </ion-row>
+          @for (vintage of vintages; track vintage.year) {
+            <ion-row>
+              <ion-col>{{ vintage.year }}</ion-col>
+              <ion-col>
+                <ion-text color="primary">{{
+                  checkDrinkability(vintage.year, 'red', vintage.rating)
+                }}</ion-text>
+              </ion-col>
+              <ion-col>
+                <ion-text color="secondary">{{
+                  checkDrinkability(vintage.year, 'white', vintage.rating)
+                }}</ion-text>
+              </ion-col>
+            </ion-row>
+          }
+        </ion-grid>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+</ion-content>
