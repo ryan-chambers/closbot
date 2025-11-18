@@ -1,24 +1,24 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
   <!-- Calendar outline -->
-  <rect x="14" y="12" width="36" height="40" rx="2" stroke="#DB4486" stroke-width="2" fill="none"/>
+  <rect x="14" y="12" width="36" height="40" rx="2" stroke="#c85a60" stroke-width="2" fill="none"/>
 
   <!-- Top bar -->
-  <rect x="14" y="12" width="36" height="8" fill="#DB4486"/>
+  <rect x="14" y="12" width="36" height="8" fill="#c85a60"/>
 
   <!-- Rings -->
-  <rect x="20" y="8" width="4" height="8" rx="1" fill="#ddc52c"/>
-  <rect x="40" y="8" width="4" height="8" rx="1" fill="#ddc52c"/>
+  <rect x="20" y="8" width="4" height="8" rx="1" fill="#d4c52d"/>
+  <rect x="40" y="8" width="4" height="8" rx="1" fill="#d4c52d"/>
 
   <!-- Grid of dates (dots) -->
-  <circle cx="22" cy="28" r="2" fill="#DB4486"/>
-  <circle cx="32" cy="28" r="2" fill="#DB4486"/>
-  <circle cx="42" cy="28" r="2" fill="#DB4486"/>
+  <circle cx="22" cy="28" r="2" fill="#c85a60"/>
+  <circle cx="32" cy="28" r="2" fill="#c85a60"/>
+  <circle cx="42" cy="28" r="2" fill="#c85a60"/>
 
-  <circle cx="22" cy="36" r="2" fill="#DB4486"/>
-  <circle cx="32" cy="36" r="2" fill="#ddc52c"/> <!-- Highlighted date -->
-  <circle cx="42" cy="36" r="2" fill="#DB4486"/>
+  <circle cx="22" cy="36" r="2" fill="#c85a60"/>
+  <circle cx="32" cy="36" r="2" fill="#d4c52d"/> <!-- Highlighted date -->
+  <circle cx="42" cy="36" r="2" fill="#c85a60"/>
 
-  <circle cx="22" cy="44" r="2" fill="#DB4486"/>
-  <circle cx="32" cy="44" r="2" fill="#DB4486"/>
-  <circle cx="42" cy="44" r="2" fill="#DB4486"/>
+  <circle cx="22" cy="44" r="2" fill="#c85a60"/>
+  <circle cx="32" cy="44" r="2" fill="#c85a60"/>
+  <circle cx="42" cy="44" r="2" fill="#c85a60"/>
 </svg>
