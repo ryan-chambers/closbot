@@ -43,13 +43,11 @@ export class ResponseLogService {
   }
 
   recordResponseLogs() {
-    if (this.list().length === 0) {
+    if (this.responses.length === 0) {
       return;
     }
 
-    const responseLog = this.list()
-      .map((r) => `${r.context} : ${r.text}`)
-      .join('\n');
+    const responseLog = this.responses.map((r) => `${r.context} : ${r.text}`).join('\n');
 
     const logLine = this.generateLogFileLine(responseLog);
 
