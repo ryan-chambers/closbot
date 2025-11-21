@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { firstValueFrom, from, map, Observable, switchMap, tap } from 'rxjs';
+import { firstValueFrom, from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { environment } from '../environments/environment';
-import { OpenAiService } from './openai.service';
-import { ToastService } from './toast.service';
-import { WineContext, WineReview } from '../models/wines.model';
+import { OpenAiService } from '@services//openai.service';
+import { ToastService } from '@services/toast.service';
 import { ResponseContext, TrackResponse } from './track-response.decorator';
-import { ResponseLogService } from './response-log.service';
+import { RagQueryResult, WineContext } from '@models/wines.model';
+import { ResponseLogService } from '@services/response-log.service';
 
 interface PineconeResponse {
   matches: Match[];
@@ -32,7 +32,7 @@ interface PineconeWineContext {
 const PERSONAL = 'My Notes';
 const PERSONAL_U = PERSONAL.toUpperCase();
 
-function serializeReview(review: WineReview): string {
+function serializeReview(review: RagQueryResult): string {
   return `${review.content} Score: ${review.score}`;
 }
 
@@ -95,12 +95,12 @@ export class PineconeService {
     context: ResponseContext.RAG_CONTEXT,
     serializer: serializeWineContext,
   })
-  async getContextForQuery(query: string): Promise<WineContext> {
+  async getContextForQuery(query: string | number[]): Promise<WineContext> {
     const ragContext: PineconeWineContext[] = await this.getRagData(query);
 
     const result = {
-      personalReviews: new Array<WineReview>(),
-      otherContext: new Array<WineReview>(),
+      personalReviews: new Array<RagQueryResult>(),
+      otherContext: new Array<RagQueryResult>(),
     };
     ragContext.forEach((context) => {
       if (context.source.toUpperCase() === PERSONAL_U) {
@@ -117,16 +117,23 @@ export class PineconeService {
     return result;
   }
 
-  private async getRagData(userMessage: string): Promise<PineconeWineContext[]> {
-    return firstValueFrom(this.queryPinecone(userMessage));
+  private async getRagData(query: string | number[]): Promise<PineconeWineContext[]> {
+    return firstValueFrom(this.queryPinecone(query));
   }
 
   private embedVectorAsObservable(query: string): Observable<number[]> {
     return from(this.openAiService.embedVector(query));
   }
 
-  queryPinecone(query: string, numberOfResults: number = 3): Observable<PineconeWineContext[]> {
-    return this.embedVectorAsObservable(query).pipe(
+  queryPinecone(
+    query: string | number[],
+    numberOfResults: number = 3,
+  ): Observable<PineconeWineContext[]> {
+    const embedding: Observable<number[]> = Array.isArray(query)
+      ? of(query as number[])
+      : this.embedVectorAsObservable(query);
+
+    return embedding.pipe(
       map((vector: number[]) => ({
         vector,
         topK: numberOfResults,

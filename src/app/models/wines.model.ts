@@ -1,11 +1,11 @@
-export interface WineReview {
+export interface RagQueryResult {
   score: number;
   content: string;
 }
 
 export interface WineContext {
-  personalReviews: WineReview[];
-  otherContext: WineReview[];
+  personalReviews: RagQueryResult[];
+  otherContext: RagQueryResult[];
 }
 
 export type WineBottleColor = 'red' | 'white';

@@ -1,10 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import OpenAI from 'openai';
 import { environment } from '../environments/environment';
-import { WineContext } from '../models/wines.model';
 import { createChatSystemPrompt, createMenuSummarySystemPrompt } from './prompt-helper.util';
 import { ResponseContext, TrackResponse } from './track-response.decorator';
 import { ResponseLogService } from './response-log.service';
+import { WineContext } from '@models/wines.model';
 
 /**
  * Encapsulates OpenAI client as well as which prompts to use for different
@@ -33,10 +33,14 @@ export class OpenAiService {
   });
 
   embedVector(query: string): Promise<number[]> {
+    return this.embedVectors([query]).then((vectors) => vectors[0]);
+  }
+
+  embedVectors(queries: string[]): Promise<Array<number[]>> {
     return this.openAiClient.embeddings
-      .create({ model: this.embeddingModel, input: query })
+      .create({ model: this.embeddingModel, input: queries })
       .then((res) => {
-        return res.data[0].embedding;
+        return res.data.map((d) => d.embedding);
       });
   }
 
@@ -56,7 +60,7 @@ export class OpenAiService {
   }
 
   @TrackResponse(ResponseContext.WINE_MENU_TEXT)
-  async readWineMenuPhoto(base64Image: string): Promise<string> {
+  async readWineMenuPhoto(base64Image: string): Promise<string[]> {
     const response = await this.openAiClient.chat.completions.create({
       model: 'gpt-4o',
       messages: [
@@ -72,7 +76,7 @@ export class OpenAiService {
             {
               type: 'text',
               // TODO move to prompt helper?
-              text: 'You are a sommelier reading a wine list. Please review the menu in the photo and provide a summary of the wines listed. Include the name, region, and any other relevant information. Please do not include any other text or formatting.',
+              text: 'You are a sommelier reading a wine list. Please review the menu in the photo and provide a summary of the wines listed. Each wine should be on a new line. Include the name, region, and any other relevant information. Please do not include any other text or formatting.',
             },
           ],
         },
@@ -81,10 +85,21 @@ export class OpenAiService {
 
     console.log(`Reading of wine menu:`, response.choices[0].message.content);
 
-    return response.choices[0].message.content ?? '';
+    const responseContent = response.choices[0].message.content ?? '';
+    const lines = responseContent
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+
+    if (lines.length === 0) {
+      console.log(`Unable to extract wines from menu.`, responseContent);
+      return [];
+    }
+
+    return lines;
   }
 
-  async summarizeWineMenu(menu: string, context: WineContext): Promise<string> {
+  async summarizeWineMenu(menu: string, context: WineContext[]): Promise<string> {
     const instructions = createMenuSummarySystemPrompt(context);
 
     const response = await this.openAiClient.responses.create({
