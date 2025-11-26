@@ -113,9 +113,6 @@ export class OpenAiService {
 
   @TrackResponse(ResponseContext.WINE_BOTTLE_IMAGE_DETAILS)
   async readWineBottlePhoto(base64Image: string): Promise<WineBottleInfo | null> {
-    // TODO a little more work required for this prompt, as responses provide a bit too much additional detail.
-    // More testing required with other bottles
-    // Do I need a response schema? Could make querying the RAG result in more accurate response.
     const prompt = `Here is a picture of a bottle of wine from Burgundy. Please tell me the producer, vintage, appellation. You MUST NOT provide any additional details or commentary. You MUST return the information in plain text format, without any formatting. Return N/A for any information is not known.
       Return the information in the following format:
       <format>
