@@ -1,25 +1,26 @@
 import { Component, inject, signal } from '@angular/core';
 import { IonContent, IonButton, IonTextarea } from '@ionic/angular/standalone';
-import { ChatService } from '../services/chat.service';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { MarkdownComponent } from 'ngx-markdown';
-import { HeaderComponent } from '../header/header.component';
-import { CameraService } from '../services/camera.service';
-import { WineService } from '../services/wine.service';
+import { CameraService } from '@services/camera.service';
+import { WineService } from '@services/wine.service';
+import { ChatService } from '@services/chat.service';
+import { HeaderComponent } from '@components/header/header.component';
+import { DatePipe, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-chat',
   templateUrl: 'chat.component.html',
   styleUrls: ['chat.component.scss'],
   imports: [
-    CommonModule,
     FormsModule,
     HeaderComponent,
     IonButton,
     IonContent,
     IonTextarea,
     MarkdownComponent,
+    NgClass,
+    DatePipe,
   ],
 })
 export class ChatComponent {
@@ -74,6 +75,16 @@ export class ChatComponent {
    * system message.
    */
   async readMenu(): Promise<void> {
+    this.consumeImage(
+      (image: string) => this.wineService.readWineMenu(image),
+      'Failed to read menu:',
+    );
+  }
+
+  private async consumeImage(
+    consumer: (image: string) => Promise<string>,
+    errMsg: string,
+  ): Promise<void> {
     try {
       this.waiting.set(true);
 
@@ -83,14 +94,25 @@ export class ChatComponent {
         return;
       }
 
-      const recommendation = await this.wineService.readWineMenu(image);
+      const recommendation = await consumer(image);
       this.chatService.addSystemMessage(recommendation);
     } catch (err: any) {
       const msg = err?.message ?? String(err);
-      this.chatService.addSystemMessage(`Failed to read menu: ${msg}`);
+      this.chatService.addSystemMessage(`${errMsg} ${msg}`);
     } finally {
       this.waiting.set(false);
       this.scrollToBottom();
     }
+  }
+
+  /**
+   * Take a picture of a bottle of wine, send it to the wine service to get more details about
+   * it, then append the result to the chat as a system message.
+   */
+  sumarizeBottle() {
+    this.consumeImage(
+      (image: string) => this.wineService.summarizeWine(image),
+      'Failed to summarize bottle:',
+    );
   }
 }

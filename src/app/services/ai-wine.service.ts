@@ -4,15 +4,17 @@ import { OpenAiService } from './openai.service';
 import { WineServiceInterface } from './wine.service';
 import { ResponseContext, TrackResponse } from './track-response.decorator';
 import { ResponseLogService } from './response-log.service';
-import { WineContext } from '@models/wines.model';
+import { WineBottleInfo, WineContext } from '@models/wines.model';
+import { VintagesService } from './vintages.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AiWineService implements WineServiceInterface {
-  private pineconeService = inject(PineconeService);
-  private openAiService = inject(OpenAiService);
-  responseLogService = inject(ResponseLogService);
+  private readonly pineconeService = inject(PineconeService);
+  private readonly openAiService = inject(OpenAiService);
+  private readonly responseLogService = inject(ResponseLogService);
+  private readonly vintagesService = inject(VintagesService);
 
   @TrackResponse(ResponseContext.CHAT_RESPONSE)
   async invokeChat(userMessage: string): Promise<string> {
@@ -49,9 +51,60 @@ export class AiWineService implements WineServiceInterface {
     );
 
     // 4. summarize wine menu
-    const response = await this.openAiService.summarizeWineMenu(menuWines.join('\n'), wineContexts);
+    return await this.openAiService.summarizeWineMenu(menuWines.join('\n'), wineContexts);
+  }
 
-    return response;
+  @TrackResponse(ResponseContext.WINE_BOTTLE_SUMMARY)
+  async describeWine(base64Image: string): Promise<string> {
+    // 1. read bottle image
+    const wineBottleInfo = await this.openAiService.readWineBottlePhoto(base64Image);
+    if (!wineBottleInfo) {
+      return 'Could not read the wine bottle details from the photo.';
+    }
+
+    const wineBottleString: string = this.formatWineBottlInfo(wineBottleInfo);
+    // 2. get embedding for the bottle
+    const embedding = await this.openAiService.embedVector(wineBottleString);
+    // 3. get context for the bottle embedding
+    const context = await this.pineconeService.getContextForQuery(embedding);
+    console.log('RAG context', context);
+
+    // 4. summarize wine bottle
+    const vintageInfo: string | undefined = this.vintageInfo(wineBottleInfo.vintage);
+    return await this.openAiService.describeWine(wineBottleString, context, vintageInfo);
+  }
+
+  private vintageInfo(vintage?: string): string | undefined {
+    if (!vintage) {
+      console.warn('No vintage');
+      return undefined;
+    }
+
+    const year = parseInt(vintage, 10);
+    if (isNaN(year) || year < 1900 || year > new Date().getFullYear()) {
+      console.warn('Got unparseable vintage year:', vintage);
+      return undefined;
+    }
+
+    const vintageData = this.vintagesService.getVintageReport(year);
+    if (vintageData) {
+      // TODO could also include whether to drink or hold, but that would require the LLM to determine Premier Cru, grand cru, etc.
+      return `In ${year}, the red wines were rated as a ${vintageData.red} vintage and the white wines were rated as a ${vintageData.white} vintage. The general notes are: ${vintageData.notes}.`;
+    } else {
+      console.warn(`No vintage data for year ${year}`);
+      return undefined;
+    }
+  }
+
+  private formatWineBottlInfo(info: WineBottleInfo): string {
+    let result = `${info.producer}`;
+    if (info.appellation) {
+      result += ` ${info.appellation}`;
+    }
+    if (info.vintage) {
+      result += `${info.vintage}`;
+    }
+    return result;
   }
 
   async flagResponse(): Promise<void> {

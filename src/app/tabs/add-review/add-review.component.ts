@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
@@ -7,11 +6,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { WineService } from '../services/wine.service';
-import { GalleryService } from '../services/gallery.service';
 import { IonButton, IonContent, IonTextarea, IonToggle } from '@ionic/angular/standalone';
-import { ToastService } from '../services/toast.service';
-import { HeaderComponent } from '../header/header.component';
+import { HeaderComponent } from '@components/header/header.component';
+import { GalleryService } from '@services/gallery.service';
+import { WineService } from '@services/wine.service';
+import { ToastService } from '@services/toast.service';
 
 @Component({
   selector: 'app-add-review',

@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { IonImg, IonCol, IonRow, IonGrid, IonContent } from '@ionic/angular/standalone';
-import { CommonModule } from '@angular/common';
-import { GalleryService } from '../services/gallery.service';
-import { HeaderComponent } from '../header/header.component';
+import { HeaderComponent } from '@components/header/header.component';
+import { GalleryService } from '@services/gallery.service';
 
 @Component({
   selector: 'app-gallery',

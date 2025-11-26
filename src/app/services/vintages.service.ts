@@ -1,62 +1,10 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { WineBottleIconComponent } from '@components/wine-bottle-icon/wine-bottle-icon.component';
-import {
-  IonCol,
-  IonGrid,
-  IonItem,
-  IonRow,
-  IonText,
-  IonAccordionGroup,
-  IonAccordion,
-  IonLabel,
-  IonContent,
-} from '@ionic/angular/standalone';
-import { WineBottleColor, WineBottleDrinkHold } from '@models/wines.model';
-import { HeaderComponent } from 'src/app/header/header.component';
+import { Injectable } from '@angular/core';
+import { VintageRating, VintageReport, WhenToDrink } from '@models/vintage.model';
 
-interface VintageReport {
-  year: number;
-  red: string;
-  white: string;
-  notes: string;
-  redDrinkHold: WineBottleDrinkHold;
-  whiteDrinkHold: WineBottleDrinkHold;
-  rating: VintageRating;
-}
-
-interface WhenToDrink {
-  type: WineBottleColor;
-  location: string;
-  holdFor: number;
-  thenDrinkOrHoldFor: number;
-}
-
-enum VintageRating {
-  GOOD,
-  GREAT,
-  CHALLENGING,
-}
-
-@Component({
-  selector: 'app-vintage-report',
-  templateUrl: 'vintage-report.component.html',
-  styleUrls: ['vintage-report.component.scss'],
-  imports: [
-    HeaderComponent,
-    IonAccordion,
-    IonAccordionGroup,
-    IonContent,
-    IonCol,
-    IonGrid,
-    IonItem,
-    IonLabel,
-    IonRow,
-    IonText,
-    WineBottleIconComponent,
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+@Injectable({
+  providedIn: 'root',
 })
-export class VintageReportComponent {
+export class VintagesService {
   readonly whenToDrink: WhenToDrink[] = [
     { type: 'red', location: 'Village Cote de Beaune', holdFor: 4, thenDrinkOrHoldFor: 6 },
     { type: 'red', location: 'Village Cote de Nuits', holdFor: 5, thenDrinkOrHoldFor: 7 },
@@ -68,8 +16,12 @@ export class VintageReportComponent {
     { type: 'white', location: 'Grand crus', holdFor: 8, thenDrinkOrHoldFor: 10 },
   ];
 
+  getVintageReport(year: number): VintageReport | undefined {
+    return this.vintages.find((v) => v.year === year);
+  }
+
   // Note: These drink/hold dates are based on late 2025
-  vintages: VintageReport[] = [
+  readonly vintages: VintageReport[] = [
     {
       year: 2024,
       red: '17/20. Aside from the best reds, the full-bodied, fruity reds should be drunk young',
@@ -252,44 +204,4 @@ export class VintageReportComponent {
       rating: VintageRating.GREAT,
     },
   ];
-
-  showPremox(year: number): boolean {
-    return year <= 2011;
-  }
-
-  /**
-   * Determine drinkability for a vintage.
-   *
-   * If `color` is provided, only returns the details for that color (e.g. "reds: ...").
-   * If `color` is omitted, returns the previous combined summary for both colors.
-   *
-   * Year must be between 2005 and 2024 (inclusive). Uses late-2025 as reference.
-   */
-  checkDrinkability(year: number, color: WineBottleColor, rating: VintageRating): string {
-    if (year < 2005 || year > 2024) {
-      return 'Year must be between 2005 and 2024.';
-    }
-
-    const referenceYear = 2025; // Late-2025 reference as noted in file
-    const age = referenceYear - year;
-
-    // Apply vintage-based modifier: GREAT => +25%, CHALLENGING => -25%
-    let modifier = 1;
-    if (rating === VintageRating.GREAT) {
-      modifier = 1.25;
-    } else if (rating === VintageRating.CHALLENGING) {
-      modifier = 0.75;
-    }
-
-    const drinkable = this.whenToDrink
-      .filter(
-        (slot) =>
-          slot.type === color &&
-          age >= slot.holdFor * modifier &&
-          age <= (slot.holdFor + slot.thenDrinkOrHoldFor) * modifier,
-      )
-      .map((slot) => slot.location);
-
-    return drinkable.join(', ');
-  }
 }

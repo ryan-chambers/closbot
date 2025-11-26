@@ -11,6 +11,8 @@ export interface WineServiceInterface {
 
   readWineMenu(base64Image: string): Promise<string>;
 
+  describeWine(base64Image: string): Promise<string>;
+
   /**
    * Will capture the requests and responses from the most recent AI interaction
    * if the response was hallucinated it can be later investigated.
@@ -49,5 +51,9 @@ export class WineService {
 
   flagChat(): Promise<void> {
     return this.getService().flagResponse();
+  }
+
+  summarizeWine(base64Image: string): Promise<string> {
+    return this.getService().describeWine(base64Image);
   }
 }

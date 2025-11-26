@@ -64,4 +64,13 @@ export class FakeWineService implements WineServiceInterface {
       }, 3000);
     });
   }
+
+  @TrackResponse(ResponseContext.WINE_BOTTLE_SUMMARY)
+  async describeWine(_base64Image: string): Promise<string> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('This is a great bottle. The producer is wonderful. The cru is top-notch. Etc.');
+      }, 1100);
+    });
+  }
 }
