@@ -58,3 +58,17 @@ export const createMenuSummarySystemPrompt = (wineContexts: WineContext[]): stri
   }
   return prompt;
 };
+
+const describePromptBase = `I have a bottle of wine from Burgundy. Please summarize the wine for me, including any details that could be interesting for a sommelier.  Please return text with only markdown formatting. The details of the bottle are as follows:
+`;
+
+export const describeWinePrompt = (
+  wineDetails: string,
+  vintageInfo: string | undefined,
+): string => {
+  let prompt = `${describePromptBase} ${wineDetails}`;
+  if (vintageInfo) {
+    prompt += ` Here is some additional information about the vintage: ${vintageInfo}, which you can include in the response. For a bottle of red wine, only include the red wine information, and similarly for white wine.`;
+  }
+  return prompt;
+};

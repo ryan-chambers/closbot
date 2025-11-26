@@ -21,8 +21,9 @@
     "lib": ["es2020", "dom"],
     "paths": {
       "@components/*": ["src/app/components/*"],
+      "@models/*": ["src/app/models/*"],
       "@services/*": ["src/app/services/*"],
-      "@models/*": ["src/app/models/*"]
+      "@tabs/*": ["src/app/tabs/*"]
     },
     "useDefineForClassFields": false,
     "resolveJsonModule": true

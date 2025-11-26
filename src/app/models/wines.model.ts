@@ -11,3 +11,9 @@ export interface WineContext {
 export type WineBottleColor = 'red' | 'white';
 
 export type WineBottleDrinkHold = 'drink' | 'hold' | 'drink-or-hold';
+
+export interface WineBottleInfo {
+  producer: string;
+  appellation?: string;
+  vintage?: string;
+}

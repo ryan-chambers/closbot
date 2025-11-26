@@ -45,7 +45,8 @@
       <div class="button-container">
         <ion-button (click)="sendMessage()" [disabled]="!currentMessage.trim()">Chat</ion-button>
         <ion-button (click)="clearChat()">Clear</ion-button>
-        <ion-button (click)="readMenu()" [disabled]="waiting()">Read Menu</ion-button>
+        <ion-button (click)="readMenu()" [disabled]="waiting()">Menu</ion-button>
+        <ion-button (click)="sumarizeBottle()" [disabled]="waiting()">Bottle</ion-button>
       </div>
     </div>
   </div>

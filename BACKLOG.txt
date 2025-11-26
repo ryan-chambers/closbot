@@ -1,19 +1,24 @@
+- RAG is returning similar bottle (village white vs. town red) in search results, is there any way to fix that?
+    - work-around is to mention that in the chat and ask for clarification
 - continue testing menu recommendations for false positives, finding actual RAG results
-- incorporate reading the wine menu more organically into the chat. It will give a recommendation before I can put in the menu
 - decide LLM model
     - using OpenAI for now, since that is API I have access to already
     - compare different models and their price
     - OpenAI dropped model price for o-3
+    - could use different models for different use cases
 - enhancement: add pagination (or thumbnails?) to gallery?
     - or cap at last, say, 10 wines... but then delete older ones that can't be viewed
 - mode: wine map, using leaflet
 - expose K for optimal results?
 - feature: stream responses on screen like how OpenAI works
 - figure out why angular-cli is broken. Due to ionic somehow
-- add more eslint
+- add more eslint, and remove typescript lint
 
 DONE
 - don't show toast message if user closes camera
 - use ion-text-area instead of textarea
 - chat keyboard area is too small on mobile; buttons should be moved to line below
 - for chat inquiry, should log my message as well
+- incorporate reading the wine menu more organically into the chat. It will give a recommendation before I can put in the menu
+    - feature: take a picture of a bottle and get info on it
+- refactor package names, components, tabs

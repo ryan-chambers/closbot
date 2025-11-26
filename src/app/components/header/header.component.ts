@@ -9,8 +9,8 @@ import {
   IonToggle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { ConfigService } from '../services/config.service';
-import { ChatService } from '../services/chat.service';
+import { ChatService } from '@services/chat.service';
+import { ConfigService } from '@services/config.service';
 
 @Component({
   selector: 'app-header',
