@@ -1,0 +1,13 @@
+<app-header [title]="'Edit Review'"></app-header>
+
+<ion-content [fullscreen]="true">
+  <ion-row>
+    <ion-img [src]="photo().webviewPath"></ion-img>
+  </ion-row>
+  <ion-row>
+    <ion-textarea [(ngModel)]="notes" placeholder="Wine notes here..." rows="3"></ion-textarea>
+    <div>
+      <ion-button (click)="submitReview()">Save notes</ion-button>
+    </div>
+  </ion-row>
+</ion-content>

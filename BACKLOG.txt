@@ -1,6 +1,7 @@
 - RAG is returning similar bottle (village white vs. town red) in search results, is there any way to fix that?
     - work-around is to mention that in the chat and ask for clarification
 - continue testing menu recommendations for false positives, finding actual RAG results
+- add french language option
 - decide LLM model
     - using OpenAI for now, since that is API I have access to already
     - compare different models and their price

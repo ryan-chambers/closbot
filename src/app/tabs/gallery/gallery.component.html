@@ -6,6 +6,8 @@
       @for (photo of winePhotos(); track photo.filepath) {
         <ion-col size="6">
           <ion-img [src]="photo.webviewPath"></ion-img>
+          <ion-button (click)="editPhoto(photo.id)">Edit</ion-button>
+          <ion-button (click)="openDeleteModal(photo.id)">Delete</ion-button>
           <p>{{ photo.wineDetails }}</p>
         </ion-col>
       }
@@ -15,5 +17,18 @@
         </ion-col>
       }
     </ion-row>
+    <ion-modal [isOpen]="isModalOpen()">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Are you sure the photo should be deleted?</ion-title>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+          <ion-button (click)="deletePhoto()">Yes</ion-button>
+          <ion-button fill="outline" (click)="closeModal()">No</ion-button>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
   </ion-grid>
 </ion-content>

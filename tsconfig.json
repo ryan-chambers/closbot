@@ -22,6 +22,7 @@
     "paths": {
       "@components/*": ["src/app/components/*"],
       "@models/*": ["src/app/models/*"],
+      "@resolvers/*": ["src/app/resolvers/*"],
       "@services/*": ["src/app/services/*"],
       "@tabs/*": ["src/app/tabs/*"]
     },
