@@ -1,1 +1,7 @@
 <home>/Library/Android/sdk/platform-tools/adb
+
+adb shell
+- connects to device on command line
+
+adb reconnect
+- for issues getting access to phone

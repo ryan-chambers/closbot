@@ -7,9 +7,10 @@ import { Platform } from '@ionic/angular';
 import { CameraService } from './camera.service';
 
 export interface WinePhoto {
+  id: string;
   filepath: string;
   webviewPath?: string;
-  wineDetails: string;
+  wineDetails?: string;
 }
 
 @Injectable({
@@ -24,8 +25,8 @@ export class GalleryService {
 
   private WINE_PHOTO_STORAGE: string = 'winePhotos';
 
-  public async addNewToGallery(details: string): Promise<boolean> {
-    console.log('Adding photo to gallery with details ' + details);
+  public async addNewToGallery(details?: string): Promise<boolean> {
+    console.log(`Adding photo to gallery with details ${details}`);
     const capturedPhoto = await this.cameraService.takePhoto();
 
     if (!capturedPhoto) {
@@ -33,20 +34,73 @@ export class GalleryService {
     }
 
     // Save the picture and add it to gallery
-    const savedImageFile = await this.savePicture(capturedPhoto);
-    const newPhoto: WinePhoto = { ...savedImageFile, wineDetails: details };
+    const id = String(Date.now());
+    const savedImageFile = await this.savePicture(capturedPhoto, id);
+    const newPhoto: WinePhoto = { ...savedImageFile, wineDetails: details, id };
 
     const photos = [...this.winePhotos()];
     photos.unshift(newPhoto);
 
+    this.savePhotos(photos);
+
+    return Promise.resolve(true);
+  }
+
+  private savePhotos(photos: WinePhoto[]) {
     this.winePhotos.set(photos);
 
     Preferences.set({
       key: this.WINE_PHOTO_STORAGE,
       value: JSON.stringify(photos),
     });
+  }
 
-    return Promise.resolve(true);
+  public updatePhotoNotes(id: string, notes: string) {
+    const photos = this.winePhotos().map((photo) => {
+      if (photo.id === id) {
+        return { ...photo, wineDetails: notes };
+      }
+      return photo;
+    });
+
+    this.savePhotos(photos);
+  }
+
+  public async deletePhoto(id: string) {
+    const toBeDeleted = this.winePhotos().find((photo) => photo.id === id);
+    if (!toBeDeleted) {
+      console.warn(`Tried to delete photo with id ${id} but not found`);
+      return;
+    }
+
+    const photos = this.winePhotos().filter((photo) => photo.id !== id);
+
+    let path = toBeDeleted.filepath;
+    if (this.platform.is('hybrid')) {
+      console.log(`Trimming directory on native app`);
+      // Remove webviewPath prefix from path
+      path = path.substring(path.lastIndexOf('/') + 1);
+      console.log(`Trimmed path: ${path}`);
+    }
+
+    console.log(`Deleting file at path: ${path}`);
+
+    Filesystem.deleteFile({
+      path,
+      directory: Directory.Data,
+    });
+
+    // TODO: don't save if Filesystem.deleteFile fails?
+    this.savePhotos(photos);
+  }
+
+  public async getPhotoById(id: string | null): Promise<WinePhoto | undefined> {
+    if (!id) {
+      console.warn('Asked for null id');
+      return undefined;
+    }
+    await this.loadSaved();
+    return this.winePhotos().find((photo) => photo.id === id);
   }
 
   public async loadSaved() {
@@ -67,20 +121,23 @@ export class GalleryService {
           directory: Directory.Data,
         });
 
+        console.log(`Loaded file with path ${photo.filepath}`);
         // Web platform only: Load the photo as base64 data
         photo.webviewPath = `data:image/jpeg;base64,${readFile.data}`;
       }
     }
     this.winePhotos.set(winePhotos);
+
+    console.log('Finished loading gallery');
   }
 
   // Save picture to file on device
-  private async savePicture(photo: Photo) {
+  private async savePicture(photo: Photo, id: string) {
     // Convert photo to base64 format, required by Filesystem API to save
     const base64Data = await this.readAsBase64(photo);
 
     // Write the file to the data directory
-    const fileName = Date.now() + '.jpeg';
+    const fileName = `${id}.jpeg`;
     const savedFile = await Filesystem.writeFile({
       path: fileName,
       data: base64Data,
@@ -88,7 +145,6 @@ export class GalleryService {
     });
 
     if (this.platform.is('hybrid')) {
-      console.log(`I'm hybrid`);
       // Display the new image by rewriting the 'file://' path to HTTP
       // Details: https://ionicframework.com/docs/building/webview#file-protocol
       return {
@@ -107,7 +163,6 @@ export class GalleryService {
 
   private async readAsBase64(photo: Photo) {
     if (this.platform.is('hybrid')) {
-      console.log(`I'm hybrid`);
       // Read the file into base64 format
       const file = await Filesystem.readFile({
         path: photo.path!,

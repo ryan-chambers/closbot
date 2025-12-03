@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
+import { photoResolver } from '@resolvers/photo.resolver';
 
 export const routes: Routes = [
   {
@@ -18,6 +19,14 @@ export const routes: Routes = [
       {
         path: 'gallery',
         loadComponent: () => import('./gallery/gallery.component').then((m) => m.GalleryComponent),
+      },
+      {
+        path: 'edit-review/:id',
+        loadComponent: () =>
+          import('./edit-photo/edit-review.component').then((m) => m.EditReviewComponent),
+        resolve: {
+          photo: photoResolver,
+        },
       },
       {
         path: 'vintage',

@@ -11,8 +11,10 @@
           rows="3"
         ></ion-textarea>
         <div class="pt-8p">
-          <ion-toggle formControlName="includePhoto"> Include photo?</ion-toggle>
+          <ion-toggle formControlName="includePhoto"> Include photo? *</ion-toggle>
+          <ion-toggle formControlName="includeReview"> Include review? *</ion-toggle>
         </div>
+        <p>* At least one must be selected.</p>
         <div>
           <ion-button (click)="submitReview()" [disabled]="reviewForm.status !== 'VALID'">
             Save notes</ion-button
