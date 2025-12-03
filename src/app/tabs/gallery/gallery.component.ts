@@ -65,11 +65,10 @@ export class GalleryComponent {
   deletePhoto() {
     if (this.photoToDeleteId) {
       this.galleryService.deletePhoto(this.photoToDeleteId);
-      this.isModalOpen.set(false);
     } else {
       console.warn('Trying to delete with no photo id set');
-      // TODO
-      // this.isModalOpen.set(false);
     }
+
+    this.isModalOpen.set(false);
   }
 }
