@@ -14,6 +14,7 @@ import {
 } from '@ionic/angular/standalone';
 import { VintageRating } from '@models/vintage.model';
 import { WineBottleColor } from '@models/wines.model';
+import { ContentService } from '@services/content.service';
 import { VintagesService } from '@services/vintages.service';
 
 @Component({
@@ -37,8 +38,11 @@ import { VintagesService } from '@services/vintages.service';
 })
 export class VintageReportComponent {
   private readonly vintagesService = inject(VintagesService);
+  private readonly contentService = inject(ContentService);
 
-  readonly vintages = this.vintagesService.vintages;
+  readonly vintages = this.vintagesService.getVintages();
+
+  content = this.contentService.selectContent((content) => content.vintageReportComponent);
 
   showPremox(year: number): boolean {
     return year <= 2011;
@@ -50,10 +54,13 @@ export class VintageReportComponent {
    * If `color` is provided, only returns the details for that color (e.g. "reds: ...").
    * If `color` is omitted, returns the previous combined summary for both colors.
    *
-   * Year must be between 2005 and 2024 (inclusive). Uses late-2025 as reference.
+   * Year must be between 2005 and 2024 (inclusive).
+   *
+   * Drinkability was determined as-of late-2025.
    */
   checkDrinkability(year: number, color: WineBottleColor, rating: VintageRating): string {
     if (year < 2005 || year > 2024) {
+      // Not worth the effort to translate, since content only exists for 2025 to 2024
       return 'Year must be between 2005 and 2024.';
     }
 

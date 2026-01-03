@@ -1,4 +1,4 @@
-<app-header [title]="'Chat'"></app-header>
+<app-header></app-header>
 
 <ion-content [fullscreen]="true">
   <div class="tab-container">
@@ -11,7 +11,7 @@
           }"
         >
           <div class="message-header">
-            <strong>{{ message.sender === 'user' ? 'You' : 'ClosBot' }}</strong>
+            <strong>{{ message.sender === 'user' ? content().userTitle : 'ClosBot' }} </strong>
             <span class="timestamp">{{ message.timestamp | date: 'short' }}</span>
           </div>
           @if (message.sender === 'user') {
@@ -30,6 +30,7 @@
             <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
+            <span>{{ content().loading }}</span>
           </div>
         </div>
       }
@@ -39,14 +40,18 @@
       <ion-textarea
         [(ngModel)]="currentMessage"
         (keyup.enter)="sendMessage()"
-        placeholder="Ask here..."
+        [placeholder]="content().askHere"
       >
       </ion-textarea>
       <div class="button-container">
-        <ion-button (click)="sendMessage()" [disabled]="!currentMessage.trim()">Chat</ion-button>
-        <ion-button (click)="clearChat()">Clear</ion-button>
-        <ion-button (click)="readMenu()" [disabled]="waiting()">Menu</ion-button>
-        <ion-button (click)="sumarizeBottle()" [disabled]="waiting()">Bottle</ion-button>
+        <ion-button (click)="sendMessage()" [disabled]="!currentMessage.trim()">{{
+          content().chat
+        }}</ion-button>
+        <ion-button (click)="clearChat()">{{ content().clear }}</ion-button>
+        <ion-button (click)="readMenu()" [disabled]="waiting()">{{ content().menu }}</ion-button>
+        <ion-button (click)="sumarizeBottle()" [disabled]="waiting()">{{
+          content().bottle
+        }}</ion-button>
       </div>
     </div>
   </div>

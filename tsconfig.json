@@ -21,6 +21,7 @@
     "lib": ["es2020", "dom"],
     "paths": {
       "@components/*": ["src/app/components/*"],
+      "@errors/*": ["src/app/errors/*"],
       "@models/*": ["src/app/models/*"],
       "@resolvers/*": ["src/app/resolvers/*"],
       "@services/*": ["src/app/services/*"],

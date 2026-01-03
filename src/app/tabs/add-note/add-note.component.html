@@ -1,0 +1,26 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="tab-container">
+    <form [formGroup]="noteForm">
+      <div class="tab-content">
+        <ion-textarea
+          formControlName="note"
+          [placeholder]="content().enterNote"
+          (keyup.enter)="submitNote()"
+          rows="3"
+        ></ion-textarea>
+        <div class="pt-8p">
+          <ion-toggle formControlName="includePhoto">{{ content().includePhoto }}</ion-toggle>
+          <ion-toggle formControlName="includeNote">{{ content().includeNote }}</ion-toggle>
+        </div>
+        <p>{{ content().atLeastOne }}</p>
+        <div>
+          <ion-button (click)="submitNote()" [disabled]="noteForm.status !== 'VALID'">
+            {{ content().saveNotes }}</ion-button
+          >
+        </div>
+      </div>
+    </form>
+  </div>
+</ion-content>

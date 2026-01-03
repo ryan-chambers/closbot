@@ -1,15 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { WineServiceInterface } from './wine.service';
-import { ToastService } from './toast.service';
 import { ResponseLogService } from './response-log.service';
 import { ResponseContext, TrackResponse } from './track-response.decorator';
+import { ContentService } from './content.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FakeWineService implements WineServiceInterface {
-  private toastService = inject(ToastService);
-  responseLogService = inject(ResponseLogService);
+  private readonly responseLogService = inject(ResponseLogService);
+  private readonly contentService = inject(ContentService);
 
   async flagResponse(): Promise<void> {
     this.responseLogService.recordResponseLogs();
@@ -20,18 +20,19 @@ export class FakeWineService implements WineServiceInterface {
   @TrackResponse(ResponseContext.CHAT_RESPONSE)
   async invokeChat(_: string): Promise<string> {
     console.log('FakeWineService invoked');
+    const responseValue = `${this.contentService.language}: Fake chat response`;
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve('Fake response');
+        resolve(responseValue);
       }, 1000);
     });
   }
 
-  async addWineReview(review: string): Promise<void> {
+  async addWineNote(note: string): Promise<void> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        console.log(`Add review: ${review}`);
-        this.toastService.showToast('Fake review added');
+        console.log(`Add note: ${note}`);
+        const responseValue = `${this.contentService.language}: Fake note added`;
         resolve();
       }, 1100);
     });
@@ -60,7 +61,7 @@ export class FakeWineService implements WineServiceInterface {
   async readWineMenu(_base64Image: string): Promise<string> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(this.menuReco);
+        resolve(`${this.contentService.language}: ${this.menuReco}`);
       }, 3000);
     });
   }
@@ -69,7 +70,9 @@ export class FakeWineService implements WineServiceInterface {
   async describeWine(_base64Image: string): Promise<string> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve('This is a great bottle. The producer is wonderful. The cru is top-notch. Etc.');
+        resolve(
+          `${this.contentService.language}: This is a great bottle. The producer is wonderful. The cru is top-notch. Etc.`,
+        );
       }, 1100);
     });
   }

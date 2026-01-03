@@ -12,18 +12,18 @@ export const routes: Routes = [
         loadComponent: () => import('./chat/chat.component').then((m) => m.ChatComponent),
       },
       {
-        path: 'add-review',
+        path: 'add-note',
         loadComponent: () =>
-          import('./add-review/add-review.component').then((m) => m.AddReviewComponent),
+          import('./add-note/add-note.component').then((m) => m.AddNoteComponent),
       },
       {
         path: 'gallery',
         loadComponent: () => import('./gallery/gallery.component').then((m) => m.GalleryComponent),
       },
       {
-        path: 'edit-review/:id',
+        path: 'edit-note/:id',
         loadComponent: () =>
-          import('./edit-photo/edit-review.component').then((m) => m.EditReviewComponent),
+          import('./edit-note/edit-note.component').then((m) => m.EditNoteComponent),
         resolve: {
           photo: photoResolver,
         },

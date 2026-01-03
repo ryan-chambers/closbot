@@ -7,6 +7,9 @@ import { WineService } from '@services/wine.service';
 import { ChatService } from '@services/chat.service';
 import { HeaderComponent } from '@components/header/header.component';
 import { DatePipe, NgClass } from '@angular/common';
+import { ContentService } from '@services/content.service';
+import { ErrorCode } from '@errors/error.codes';
+import { enChat, frChat } from './chat.component.content';
 
 @Component({
   selector: 'app-chat',
@@ -24,12 +27,15 @@ import { DatePipe, NgClass } from '@angular/common';
   ],
 })
 export class ChatComponent {
-  chatService = inject(ChatService);
-  cameraService = inject(CameraService);
-  wineService = inject(WineService);
+  protected readonly chatService = inject(ChatService);
+  private readonly cameraService = inject(CameraService);
+  private readonly wineService = inject(WineService);
+  private readonly contentService = inject(ContentService);
 
   currentMessage: string = '';
   waiting = signal(false);
+
+  content = this.contentService.registerComponentContent(enChat, frChat, 'ChatComponent');
 
   sendMessage(): void {
     if (this.currentMessage.trim()) {
@@ -57,7 +63,6 @@ export class ChatComponent {
 
   private scrollToBottom() {
     setTimeout(() => {
-      // TODO don't query entire document; instead check within component itself
       const chatContainer = document.querySelector('.chat-messages');
       if (chatContainer) {
         chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -77,13 +82,13 @@ export class ChatComponent {
   async readMenu(): Promise<void> {
     this.consumeImage(
       (image: string) => this.wineService.readWineMenu(image),
-      'Failed to read menu:',
+      ErrorCode.READ_MENU_FAILED,
     );
   }
 
   private async consumeImage(
     consumer: (image: string) => Promise<string>,
-    errMsg: string,
+    errorCode: ErrorCode,
   ): Promise<void> {
     try {
       this.waiting.set(true);
@@ -96,9 +101,12 @@ export class ChatComponent {
 
       const recommendation = await consumer(image);
       this.chatService.addSystemMessage(recommendation);
-    } catch (err: any) {
-      const msg = err?.message ?? String(err);
-      this.chatService.addSystemMessage(`${errMsg} ${msg}`);
+    } catch (err: unknown) {
+      let msg = String(err);
+      if (msg.hasOwnProperty('message')) {
+        msg = (err as any).message;
+      }
+      this.chatService.addSystemMessage(`${this.contentService.translateError(errorCode)}: ${msg}`);
     } finally {
       this.waiting.set(false);
       this.scrollToBottom();
@@ -112,7 +120,7 @@ export class ChatComponent {
   sumarizeBottle() {
     this.consumeImage(
       (image: string) => this.wineService.summarizeWine(image),
-      'Failed to summarize bottle:',
+      ErrorCode.BOTTLE_SUMMARIZE_FAILED,
     );
   }
 }

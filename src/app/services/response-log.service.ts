@@ -5,6 +5,7 @@ import { filter, tap } from 'rxjs';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { ResponseContext } from './track-response.decorator';
 import { ToastService } from './toast.service';
+import { ContentService } from './content.service';
 
 export interface ResponseLogEntry {
   context: ResponseContext | null;
@@ -15,10 +16,13 @@ export interface ResponseLogEntry {
   providedIn: 'root',
 })
 export class ResponseLogService {
-  platform = inject(Platform);
-  toastService = inject(ToastService);
+  private readonly platform = inject(Platform);
+  private readonly toastService = inject(ToastService);
+  private readonly contentService = inject(ContentService);
 
   private responses: ResponseLogEntry[] = [];
+
+  serviceContent = this.contentService.selectContent((content) => content.responseLogService);
 
   constructor() {
     this.init(inject(Router));
@@ -62,7 +66,7 @@ export class ResponseLogService {
       console.log(logLine);
     }
 
-    this.toastService.showToast('Response log recorded');
+    this.toastService.showToast(this.serviceContent().logRecorded);
 
     this.clear();
   }

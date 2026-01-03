@@ -1,207 +1,175 @@
-import { Injectable } from '@angular/core';
+import { computed, Injectable, Signal } from '@angular/core';
+import { inject } from '@angular/core';
 import { VintageRating, VintageReport, WhenToDrink } from '@models/vintage.model';
+import { ContentService } from './content.service';
+import { WineBottleDrinkHold } from '@models/wines.model';
+import { enVintageNotes, frVintageNotes } from './vintage.service.content';
+
+interface YearRating {
+  rating: VintageRating;
+  redDrinkHold: WineBottleDrinkHold;
+  whiteDrinkHold: WineBottleDrinkHold;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class VintagesService {
+  private readonly contentService = inject(ContentService);
+
+  content = this.contentService.registerComponentContent(
+    enVintageNotes,
+    frVintageNotes,
+    'VintagesService',
+  );
+
   readonly whenToDrink: WhenToDrink[] = [
-    { type: 'red', location: 'Village Cote de Beaune', holdFor: 4, thenDrinkOrHoldFor: 6 },
-    { type: 'red', location: 'Village Cote de Nuits', holdFor: 5, thenDrinkOrHoldFor: 7 },
-    { type: 'red', location: 'Cote de Beaune Premier crus', holdFor: 6, thenDrinkOrHoldFor: 10 },
-    { type: 'red', location: 'Cote de Nuits Premier crus', holdFor: 7, thenDrinkOrHoldFor: 12 },
+    { type: 'red', location: 'Village Côte de Beaune', holdFor: 4, thenDrinkOrHoldFor: 6 },
+    { type: 'red', location: 'Village Côte de Nuits', holdFor: 5, thenDrinkOrHoldFor: 7 },
+    { type: 'red', location: 'Côte de Beaune Premier crus', holdFor: 6, thenDrinkOrHoldFor: 10 },
+    { type: 'red', location: 'Côte de Nuits Premier crus', holdFor: 7, thenDrinkOrHoldFor: 12 },
     { type: 'red', location: 'Grand crus', holdFor: 10, thenDrinkOrHoldFor: 15 },
-    { type: 'white', location: 'Village white', holdFor: 3, thenDrinkOrHoldFor: 5 },
+    // got too lazy to translate this entire bundle for one word :)
+    { type: 'white', location: 'Village blanc', holdFor: 3, thenDrinkOrHoldFor: 5 },
     { type: 'white', location: 'Premier crus', holdFor: 5, thenDrinkOrHoldFor: 8 },
     { type: 'white', location: 'Grand crus', holdFor: 8, thenDrinkOrHoldFor: 10 },
   ];
 
-  getVintageReport(year: number): VintageReport | undefined {
-    return this.vintages.find((v) => v.year === year);
+  readonly yearRatings: Map<number, YearRating> = new Map<number, YearRating>();
+
+  constructor() {
+    /**
+     * Here I have the rating meta-data separate from the content. In hindsight, this is a bit ugly
+     * because of the need to join the data based on the vintage year, and because the data is in
+     * two different files.
+     * I could create a separate model for the vintage notes. There is probably some way to
+     * keep the meta-data separate from the models, so there is no duplication. But that is a
+     * lot moving data around. I might change this later when I have extra co-pilot credits to burn.
+     */
+    this.yearRatings.set(2024, {
+      redDrinkHold: 'hold',
+      whiteDrinkHold: 'hold',
+      rating: VintageRating.GOOD,
+    });
+    this.yearRatings.set(2023, {
+      redDrinkHold: 'hold',
+      whiteDrinkHold: 'hold',
+      rating: VintageRating.GOOD,
+    });
+    this.yearRatings.set(2022, {
+      redDrinkHold: 'hold',
+      whiteDrinkHold: 'hold',
+      rating: VintageRating.GREAT,
+    });
+    this.yearRatings.set(2021, {
+      redDrinkHold: 'drink-or-hold',
+      whiteDrinkHold: 'drink-or-hold',
+      rating: VintageRating.CHALLENGING,
+    });
+    this.yearRatings.set(2020, {
+      redDrinkHold: 'drink-or-hold',
+      whiteDrinkHold: 'drink-or-hold',
+      rating: VintageRating.GREAT,
+    });
+    this.yearRatings.set(2019, {
+      redDrinkHold: 'drink-or-hold',
+      whiteDrinkHold: 'drink-or-hold',
+      rating: VintageRating.GREAT,
+    });
+    this.yearRatings.set(2018, {
+      redDrinkHold: 'drink-or-hold',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.GOOD,
+    });
+    this.yearRatings.set(2017, {
+      redDrinkHold: 'drink-or-hold',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.GOOD,
+    });
+    this.yearRatings.set(2016, {
+      redDrinkHold: 'drink-or-hold',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.GOOD,
+    });
+    this.yearRatings.set(2015, {
+      redDrinkHold: 'drink-or-hold',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.GREAT,
+    });
+    this.yearRatings.set(2014, {
+      redDrinkHold: 'drink',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.GOOD,
+    });
+    this.yearRatings.set(2013, {
+      redDrinkHold: 'drink',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.CHALLENGING,
+    });
+    this.yearRatings.set(2012, {
+      redDrinkHold: 'drink-or-hold',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.CHALLENGING,
+    });
+    this.yearRatings.set(2011, {
+      redDrinkHold: 'drink',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.CHALLENGING,
+    });
+    this.yearRatings.set(2010, {
+      redDrinkHold: 'drink',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.GOOD,
+    });
+    this.yearRatings.set(2009, {
+      redDrinkHold: 'drink',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.GOOD,
+    });
+    this.yearRatings.set(2008, {
+      redDrinkHold: 'drink',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.CHALLENGING,
+    });
+    this.yearRatings.set(2007, {
+      redDrinkHold: 'drink',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.CHALLENGING,
+    });
+    this.yearRatings.set(2006, {
+      redDrinkHold: 'drink',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.CHALLENGING,
+    });
+    this.yearRatings.set(2005, {
+      redDrinkHold: 'drink',
+      whiteDrinkHold: 'drink',
+      rating: VintageRating.GREAT,
+    });
   }
 
-  // Note: These drink/hold dates are based on late 2025
-  readonly vintages: VintageReport[] = [
-    {
-      year: 2024,
-      red: '17/20. Aside from the best reds, the full-bodied, fruity reds should be drunk young',
-      white: '17.5/20. Better in Yonne, Challonaise, Maconnais',
-      notes:
-        "A cooler year, neither particularly good nor bad. A winegrower's vintage, so always make sure you check the producer",
-      redDrinkHold: 'hold',
-      whiteDrinkHold: 'hold',
-      rating: VintageRating.GOOD,
-    },
-    {
-      year: 2023,
-      red: '15/20. Charming, fruity.',
-      white: '13/20.',
-      notes: 'A mixed vintage, with sometimes excessive yields',
-      redDrinkHold: 'hold',
-      whiteDrinkHold: 'hold',
-      rating: VintageRating.GOOD,
-    },
-    {
-      year: 2022,
-      red: '19/20. Ripe, balanced, open-knit',
-      white: '17/20. Generous yet fresh',
-      notes: '⭐ A dream year',
-      redDrinkHold: 'hold',
-      whiteDrinkHold: 'hold',
-      rating: VintageRating.GREAT,
-    },
-    {
-      year: 2021,
-      red: '13/20. Light-bodied, delicate, classical; modest concentration',
-      white: '14/20. Bright but lean, some are sharp or dilute',
-      notes: '⚠️ Frost-ravaged, cool',
-      redDrinkHold: 'drink-or-hold',
-      whiteDrinkHold: 'drink-or-hold',
-      rating: VintageRating.CHALLENGING,
-    },
-    {
-      year: 2020,
-      red: 'Fine balance, excellent structure. 17/20',
-      white: 'Zesty, focused. 17/20',
-      notes: '⭐ Excellent potential for long-aging',
-      redDrinkHold: 'drink-or-hold',
-      whiteDrinkHold: 'drink-or-hold',
-      rating: VintageRating.GREAT,
-    },
-    {
-      year: 2019,
-      red: 'A warm vintage with ripe, concentrated wines, though some lack acidity. 18/20',
-      white: 'Rich and full-bodied. 16/20',
-      notes: '⭐ Superb',
-      redDrinkHold: 'drink-or-hold',
-      whiteDrinkHold: 'drink-or-hold',
-      rating: VintageRating.GREAT,
-    },
-    {
-      year: 2018,
-      red: 'Structured wines, excellent acidity, and aging potential. 15/20',
-      white: 'Round, rich, some lack vibrancy. 16/20',
-      notes: 'Village and even regional wines are worth exploring',
-      redDrinkHold: 'drink-or-hold',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.GOOD,
-    },
-    {
-      year: 2017,
-      red: 'Ripe, generous wines; Early drinking. 15/20',
-      white: 'Fresh, classic, generous. 17/20',
-      notes: 'Consistent across the region, though not a powerhouse vintage',
-      redDrinkHold: 'drink-or-hold',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.GOOD,
-    },
-    {
-      year: 2016,
-      red: 'Charming, elegant, balanced. 17/20',
-      white: 'Fresh, classic, generous. 17/20',
-      notes: '⚠️ Frost-affected, huge vineyard variation',
-      redDrinkHold: 'drink-or-hold',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.GOOD,
-    },
-    {
-      year: 2015,
-      red: 'Rich, velvety, with aging potential. 18/20',
-      white: 'Fresh, classic, generous. 16/20',
-      notes: 'Red-driven vintage, although top whites can impress',
-      redDrinkHold: 'drink-or-hold',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.GREAT,
-    },
-    {
-      year: 2014,
-      red: 'Crisp, elegant, charming. 16/20',
-      white: 'Excellent, with purity, minerality, and balance. 18/20',
-      notes: '⭐ whites truly standout, especially in Chablis and Meursault',
-      redDrinkHold: 'drink',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.GOOD,
-    },
-    {
-      year: 2013,
-      red: 'A difficult vintage due to hail and rain. Reds are light and simple, with limited aging potential. 15/20',
-      white: 'High acid, classic style; good in Chablis. 17/20',
-      notes: '⚠️ Late and difficult',
-      redDrinkHold: 'drink',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.CHALLENGING,
-    },
-    {
-      year: 2012,
-      red: 'Concentrated, structured, with good depth. 17/20',
-      white: 'Dense, with weight but slightly less tension. 17/20',
-      notes: 'Very small crop, high quality',
-      redDrinkHold: 'drink-or-hold',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.CHALLENGING,
-    },
-    {
-      year: 2011,
-      red: 'Light and early-drinking, with lower acidity and softer tannins. Not for long aging. 14/20',
-      white: 'Pretty, fresh whites but not profound. 17/20',
-      notes: '⚠️ Widespread taint from ladybugs',
-      redDrinkHold: 'drink',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.CHALLENGING,
-    },
-    {
-      year: 2010,
-      red: 'Stellar vintage with intense, structured wines, excellent acidity, and aging potential. 17/20',
-      white: 'Racy, mineral, age-worthy whites. 17/20',
-      notes: '⭐ Brilliant quality across the board',
-      redDrinkHold: 'drink',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.GOOD,
-    },
-    {
-      year: 2009,
-      red: 'Plush, ripe, seductive but sometimes low in acidity. 18/20',
-      white: 'Rich, sometimes overripe, less age-worthy. 16/20',
-      notes: 'Excellent overall',
-      redDrinkHold: 'drink',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.GOOD,
-    },
-    {
-      year: 2008,
-      red: 'Lean and austere. 17/20',
-      white: 'Tense and mineral, excellent in Chablis. 17/20',
-      notes: '⚠️ Classic but acidic. High skill required to extract flavour and balance',
-      redDrinkHold: 'drink',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.CHALLENGING,
-    },
-    {
-      year: 2007,
-      red: 'Light and simple. 15/20',
-      white: 'Tense and mineral, excellent in Chablis. 17/20',
-      notes: '⚠️ Fragile',
-      redDrinkHold: 'drink',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.CHALLENGING,
-    },
-    {
-      year: 2006,
-      red: 'Vintage for early drinking rather than long aging. 14/20',
-      white: 'Crisp and mineral-driven, with good balance. Better than the reds. 16/20',
-      notes: '⚠️ Uneven',
-      redDrinkHold: 'drink',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.CHALLENGING,
-    },
-    {
-      year: 2005,
-      red: 'One of the greatest modern red vintages. 19/20',
-      white: 'Excellent balance of richness and minerality. 17/20',
-      notes: '⭐ Exceptional',
-      redDrinkHold: 'drink',
-      whiteDrinkHold: 'drink',
-      rating: VintageRating.GREAT,
-    },
-  ];
+  getVintageReport(year: number): VintageReport | undefined {
+    return this.getVintages()().find((v: VintageReport) => v.year === year);
+  }
+
+  getVintages(): Signal<VintageReport[]> {
+    return computed(() => {
+      console.log(`Vintages Content: ${JSON.stringify(this.content())}`);
+      return this.content()
+        .map((note) => {
+          const yearRating = this.yearRatings.get(note.year);
+          if (!yearRating) {
+            console.error(`No year rating found for vintage year ${note.year}`);
+            return undefined;
+          }
+          return {
+            ...note,
+            rating: yearRating ? yearRating.rating : VintageRating.GOOD,
+            redDrinkHold: yearRating ? yearRating.redDrinkHold : 'drink',
+            whiteDrinkHold: yearRating ? yearRating.whiteDrinkHold : 'drink',
+          };
+        })
+        .filter(Boolean) as VintageReport[];
+    });
+  }
 }

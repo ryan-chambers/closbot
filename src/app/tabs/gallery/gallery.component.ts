@@ -14,6 +14,7 @@ import {
 import { HeaderComponent } from '@components/header/header.component';
 import { GalleryService } from '@services/gallery.service';
 import { Router } from '@angular/router';
+import { ContentService } from '@services/content.service';
 
 @Component({
   selector: 'app-gallery',
@@ -34,14 +35,17 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GalleryComponent {
-  galleryService = inject(GalleryService);
-  router = inject(Router);
+  private readonly galleryService = inject(GalleryService);
+  private readonly router = inject(Router);
+  private readonly contentService = inject(ContentService);
 
   winePhotos = this.galleryService.winePhotos;
 
   isModalOpen = signal(false);
 
   photoToDeleteId?: string;
+
+  content = this.contentService.selectContent((content) => content.galleryComponent);
 
   async ngOnInit() {
     await this.galleryService.loadSaved();
@@ -58,8 +62,8 @@ export class GalleryComponent {
     this.photoToDeleteId = undefined;
   }
 
-  editPhoto(photoId: string) {
-    this.router.navigate(['/tabs/edit-review', photoId]);
+  editNote(photoId: string) {
+    this.router.navigate(['/tabs/edit-note', photoId]);
   }
 
   deletePhoto() {

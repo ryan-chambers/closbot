@@ -6,6 +6,8 @@ import { ResponseContext, TrackResponse } from './track-response.decorator';
 import { ResponseLogService } from './response-log.service';
 import { WineBottleInfo, WineContext } from '@models/wines.model';
 import { VintagesService } from './vintages.service';
+import { ContentService } from './content.service';
+import { ErrorCode } from '@errors/error.codes';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +17,19 @@ export class AiWineService implements WineServiceInterface {
   private readonly openAiService = inject(OpenAiService);
   private readonly responseLogService = inject(ResponseLogService);
   private readonly vintagesService = inject(VintagesService);
+  private readonly contentService = inject(ContentService);
+
+  content = this.contentService.registerComponentContent(
+    {
+      vintageData:
+        'In {{year}}, the red wines were rated as a {{redRating}} vintage and the white wines were rated as a {{whiteRating}} vintage. The general notes are: {{vintageNotes}}.',
+    },
+    {
+      vintageData:
+        'En {{year}}, les vins rouges ont été classés comme millésime {{redRating}} et les vins blancs comme millésime {{whiteRating}}. Les notes générales sont : {{vintageNotes}}.',
+    },
+    'AiWineService',
+  );
 
   @TrackResponse(ResponseContext.CHAT_RESPONSE)
   async invokeChat(userMessage: string): Promise<string> {
@@ -29,8 +44,8 @@ export class AiWineService implements WineServiceInterface {
     this.openAiService.initSession();
   }
 
-  async addWineReview(review: string) {
-    this.pineconeService.upsertWineReview(review);
+  async addWineNote(note: string) {
+    this.pineconeService.upsertWineNote(note);
   }
 
   @TrackResponse(ResponseContext.WINE_MENU_RECOMMENDATION)
@@ -39,7 +54,7 @@ export class AiWineService implements WineServiceInterface {
     const menuWines = await this.openAiService.readWineMenuPhoto(base64Image);
 
     if (menuWines.length === 0) {
-      return 'Could not read any wines from the menu photo.';
+      return this.contentService.translateError(ErrorCode.NO_WINES_FROM_MENU_PHOTO);
     }
 
     // 2. get embeddings for each wine
@@ -59,7 +74,7 @@ export class AiWineService implements WineServiceInterface {
     // 1. read bottle image
     const wineBottleInfo = await this.openAiService.readWineBottlePhoto(base64Image);
     if (!wineBottleInfo) {
-      return 'Could not read the wine bottle details from the photo.';
+      return this.contentService.translateError(ErrorCode.COULD_NOT_READ_BOTTLE_DETAILS);
     }
 
     const wineBottleString: string = this.formatWineBottlInfo(wineBottleInfo);
@@ -67,7 +82,6 @@ export class AiWineService implements WineServiceInterface {
     const embedding = await this.openAiService.embedVector(wineBottleString);
     // 3. get context for the bottle embedding
     const context = await this.pineconeService.getContextForQuery(embedding);
-    console.log('RAG context', context);
 
     // 4. summarize wine bottle
     const vintageInfo: string | undefined = this.vintageInfo(wineBottleInfo.vintage);
@@ -88,8 +102,13 @@ export class AiWineService implements WineServiceInterface {
 
     const vintageData = this.vintagesService.getVintageReport(year);
     if (vintageData) {
-      // TODO could also include whether to drink or hold, but that would require the LLM to determine Premier Cru, grand cru, etc.
-      return `In ${year}, the red wines were rated as a ${vintageData.red} vintage and the white wines were rated as a ${vintageData.white} vintage. The general notes are: ${vintageData.notes}.`;
+      // In the future, could also include whether to drink or hold, but that would require the LLM to determine Premier Cru, grand cru, etc.
+      return this.contentService.interpolateArgs(this.content().vintageData, {
+        year: year,
+        redRating: vintageData.red,
+        whiteRating: vintageData.white,
+        vintageNotes: vintageData.notes,
+      });
     } else {
       console.warn(`No vintage data for year ${year}`);
       return undefined;

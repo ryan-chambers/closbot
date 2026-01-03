@@ -4,7 +4,7 @@ export interface RagQueryResult {
 }
 
 export interface WineContext {
-  personalReviews: RagQueryResult[];
+  personalNotes: RagQueryResult[];
   otherContext: RagQueryResult[];
 }
 

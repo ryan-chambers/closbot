@@ -1,10 +1,11 @@
+import { WineContext } from '@models/wines.model';
 import { serializeWineContext } from './pinecone.service';
 
 describe('PineconeService', () => {
   describe('serializeWineContext', () => {
     it('should serialize WineContext correctly', () => {
-      const wineContext = {
-        personalReviews: [
+      const wineContext: WineContext = {
+        personalNotes: [
           { score: 5, content: 'Excellent wine with rich flavors.' },
           { score: 4, content: 'Good balance and aroma.' },
         ],
