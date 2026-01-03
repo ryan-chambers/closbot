@@ -6,37 +6,29 @@ import {
   OnInit,
   Signal,
 } from '@angular/core';
-import {
-  IonImg,
-  IonCol,
-  IonRow,
-  IonGrid,
-  IonContent,
-  IonItem,
-  IonButton,
-  IonTextarea,
-  IonToggle,
-} from '@ionic/angular/standalone';
+import { IonImg, IonRow, IonContent, IonButton, IonTextarea } from '@ionic/angular/standalone';
 import { HeaderComponent } from '@components/header/header.component';
 import { GalleryService, WinePhoto } from '@services/gallery.service';
 import { ActivatedRoute, Data } from '@angular/router';
-
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '@services/toast.service';
 import { WineService } from '@services/wine.service';
+import { ContentService } from '@services/content.service';
+import { enEditNote, frEditNote } from './edit-note.component.content';
 
 @Component({
-  selector: 'app-edit-review',
-  templateUrl: 'edit-review.component.html',
+  selector: 'app-edit-note',
+  templateUrl: 'edit-note.component.html',
   imports: [FormsModule, HeaderComponent, IonButton, IonContent, IonImg, IonRow, IonTextarea],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditReviewComponent implements OnInit {
-  galleryService = inject(GalleryService);
-  route = inject(ActivatedRoute);
-  toastService = inject(ToastService);
-  wineService = inject(WineService);
+export class EditNoteComponent implements OnInit {
+  private readonly galleryService = inject(GalleryService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly toastService = inject(ToastService);
+  private readonly wineService = inject(WineService);
+  private readonly contentService = inject(ContentService);
 
   private data: Signal<Data | undefined> = toSignal(this.route.data);
 
@@ -46,16 +38,22 @@ export class EditReviewComponent implements OnInit {
   notes: string = '';
   notesCreatedYet = false;
 
-  async submitReview() {
-    console.log('Submitting review:', this.notes);
+  content = this.contentService.registerComponentContent(
+    enEditNote,
+    frEditNote,
+    'EditNoteComponent',
+  );
+
+  async submitNote() {
+    console.log('Submitting note:', this.notes);
 
     await this.galleryService.updatePhotoNotes(this.photo().id, this.notes);
 
     if (!this.notesCreatedYet) {
-      this.wineService.addWineReview(this.notes);
+      this.wineService.addWineNote(this.notes);
     }
 
-    this.toastService.showToast('Wine notes updated');
+    this.toastService.showToast(this.content().updateWineNotes);
   }
 
   ngOnInit(): void {

@@ -1,18 +1,20 @@
 <ion-header [translucent]="true">
   <ion-row>
     <ion-toolbar>
-      <ion-title> {{ title }}</ion-title>
       <ion-buttons slot="end">
+        <ion-icon src="/assets/icon/config.svg"></ion-icon>
+
+        <ion-toggle
+          [checked]="configService.isUsingRealServices()"
+          (ionChange)="toggleRealServices($event)"
+        >
+          &nbsp;{{ content().useRealServices }} &nbsp;</ion-toggle
+        >
+        &nbsp;
+        <ion-item>EN &nbsp;<ion-toggle (click)="toggleLang()"></ion-toggle> &nbsp; FR</ion-item>
         <ion-button (click)="chatService.flagChat()" [disabled]="!chatService.enableFlagButton()">
           <ion-icon slot="icon-only" color="primary" name="flag"></ion-icon>
         </ion-button>
-        <ion-icon src="/assets/icon/config.svg"></ion-icon>
-        &nbsp;Real services? &nbsp;
-        <ion-toggle
-          [checked]="configService.isUsingRealServices()"
-          (ionChange)="toggleChange($event)"
-        ></ion-toggle>
-        &nbsp;
       </ion-buttons>
     </ion-toolbar>
   </ion-row>

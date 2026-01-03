@@ -1,10 +1,14 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
+import { ContentService } from './content.service';
+import { ErrorCode } from '@errors/error.codes';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CameraService {
+  private readonly contentService = inject(ContentService);
+
   async takePhotoAsBase64(): Promise<string | undefined> {
     const photo = await Camera.getPhoto({
       resultType: CameraResultType.DataUrl,
@@ -20,7 +24,7 @@ export class CameraService {
     const image = photo.dataUrl;
     if (!image) {
       console.error('No image captured');
-      return Promise.reject('No image captured');
+      return Promise.reject(this.contentService.translateError(ErrorCode.NO_IMAGE_CAPTURED));
     } else {
       return image;
     }
@@ -36,6 +40,7 @@ export class CameraService {
   }
 
   private handleGetPhotoError(error: unknown): Promise<Photo | undefined> {
+    // the message below is from capacitor framework
     if ((error as any)?.message === 'User cancelled photos app') {
       return Promise.resolve(undefined);
     } else {

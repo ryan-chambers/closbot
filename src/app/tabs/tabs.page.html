@@ -2,22 +2,22 @@
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="chat" href="/tabs/chat">
       <ion-icon src="/assets/icon/chat.svg"></ion-icon>
-      <ion-label>Chat</ion-label>
+      <ion-label>{{ content().chat }}</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="gallery" href="/tabs/gallery">
       <ion-icon src="/assets/icon/gallery.svg"></ion-icon>
-      <ion-label>Gallery</ion-label>
+      <ion-label>{{ content().gallery }}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="add-review" href="/tabs/add-review">
+    <ion-tab-button tab="add-note" href="/tabs/add-note">
       <ion-icon src="/assets/icon/wine-bottle-red.svg"></ion-icon>
-      <ion-label>Add Review</ion-label>
+      <ion-label>{{ content().addNote }}</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="vintage" href="/tabs/vintage">
       <ion-icon src="/assets/icon/calendar.svg"></ion-icon>
-      <ion-label>Vintages</ion-label>
+      <ion-label>{{ content().vintages }}</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

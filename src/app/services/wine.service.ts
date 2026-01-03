@@ -7,7 +7,7 @@ export interface WineServiceInterface {
   initSession(): void;
   invokeChat(userMessage: string): Promise<string>;
 
-  addWineReview(review: string): Promise<void>;
+  addWineNote(note: string): Promise<void>;
 
   readWineMenu(base64Image: string): Promise<string>;
 
@@ -41,8 +41,8 @@ export class WineService {
     return this.getService().invokeChat(userMessage);
   }
 
-  addWineReview(review: string): Promise<void> {
-    return this.getService().addWineReview(review);
+  addWineNote(note: string): Promise<void> {
+    return this.getService().addWineNote(note);
   }
 
   readWineMenu(base64Image: string): Promise<string> {

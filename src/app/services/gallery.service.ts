@@ -17,7 +17,7 @@ export interface WinePhoto {
   providedIn: 'root',
 })
 export class GalleryService {
-  cameraService = inject(CameraService);
+  private readonly cameraService = inject(CameraService);
 
   platform = inject(Platform);
 
@@ -90,7 +90,6 @@ export class GalleryService {
       directory: Directory.Data,
     });
 
-    // TODO: don't save if Filesystem.deleteFile fails?
     this.savePhotos(photos);
   }
 

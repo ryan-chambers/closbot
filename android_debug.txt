@@ -5,3 +5,6 @@ adb shell
 
 adb reconnect
 - for issues getting access to phone
+
+adb pull
+- copy file from android to local device

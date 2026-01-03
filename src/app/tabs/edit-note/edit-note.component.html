@@ -1,0 +1,13 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+  <ion-row>
+    <ion-img [src]="photo().webviewPath"></ion-img>
+  </ion-row>
+  <ion-row>
+    <ion-textarea [(ngModel)]="notes" [placeholder]="content().enterNote" rows="3"></ion-textarea>
+    <div>
+      <ion-button (click)="submitNote()">{{ content().saveNotes }}</ion-button>
+    </div>
+  </ion-row>
+</ion-content>

@@ -1,14 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import OpenAI from 'openai';
 import { environment } from '../environments/environment';
-import {
-  createChatSystemPrompt,
-  createMenuSummarySystemPrompt,
-  describeWinePrompt,
-} from './prompt-helper.util';
 import { ResponseContext, TrackResponse } from './track-response.decorator';
 import { ResponseLogService } from './response-log.service';
 import { WineBottleInfo, WineContext } from '@models/wines.model';
+import { PromptService } from './prompt.service';
 
 /**
  * Encapsulates OpenAI client as well as which prompts to use for different
@@ -19,6 +15,7 @@ import { WineBottleInfo, WineContext } from '@models/wines.model';
 })
 export class OpenAiService {
   responseLogService = inject(ResponseLogService);
+  private readonly promptService = inject(PromptService);
 
   readonly embeddingModel = 'text-embedding-3-large';
   readonly chatModel = 'gpt-4o';
@@ -30,9 +27,10 @@ export class OpenAiService {
   }
 
   openAiClient = new OpenAI({
-    // NOTE: environment.ts is deliberately excluded from source control so that this key
-    // is not available on github.
-    // This app will never be deployed to an app store, so this is not a security risk.
+    /**
+     * NOTE: environment.ts is deliberately excluded from source control so that this key is not available on github.
+     * This app will never be deployed to an app store, so this is not a security risk.
+     */
     apiKey: environment.OPENAI_API_KEY,
     dangerouslyAllowBrowser: true,
   });
@@ -50,7 +48,7 @@ export class OpenAiService {
   }
 
   async invokeChat(userMessage: string, context: WineContext): Promise<string> {
-    const instructions = createChatSystemPrompt(context);
+    const instructions = this.promptService.createChatSystemPrompt(context);
 
     console.log(`Instructions: ${instructions}`);
     const response = await this.openAiClient.responses.create({
@@ -61,15 +59,19 @@ export class OpenAiService {
     });
 
     this.previousResponseId = response.id;
-    return response.output_text;
+    return this.parseResponse(response.output_text);
   }
 
+  /**
+   * @param base64Image image of wine menu
+   * @returns A list of wines on the menu
+   */
   @TrackResponse(ResponseContext.WINE_MENU_TEXT)
   async readWineMenuPhoto(base64Image: string): Promise<string[]> {
-    const prompt =
-      'You are a sommelier reading a wine list. Please review the menu in the photo and provide a summary of the wines listed. Each wine should be on a new line. Include the name, region, and any other relevant information. Please do not include any other text or formatting.';
-
-    const responseContent = await this.invokeWithImage(base64Image, prompt);
+    const responseContent = await this.invokeWithImage(
+      base64Image,
+      this.promptService.parseWineMenuPrompt(),
+    );
 
     const lines = responseContent
       .split('\n')
@@ -78,7 +80,6 @@ export class OpenAiService {
 
     if (lines.length === 0) {
       console.log(`Unable to extract wines from menu.`, responseContent);
-      return [];
     }
 
     return lines;
@@ -113,23 +114,17 @@ export class OpenAiService {
 
   @TrackResponse(ResponseContext.WINE_BOTTLE_IMAGE_DETAILS)
   async readWineBottlePhoto(base64Image: string): Promise<WineBottleInfo | null> {
-    const prompt = `Here is a picture of a bottle of wine from Burgundy. Please tell me the producer, vintage, appellation. You MUST NOT provide any additional details or commentary. You MUST return the information in plain text format, without any formatting. Return N/A for any information is not known.
-      Return the information in the following format:
-      <format>
-      Vintage: <vintage>, or N/A if not known
-      Producer: <producer name>
-      Appellation: <appellation>
-      Grape Variety: <grape variety>
-      <format>
-      `;
-
-    const responseText = await this.invokeWithImage(base64Image, prompt);
+    const responseText = await this.invokeWithImage(
+      base64Image,
+      this.promptService.readWineBottlePrompt(),
+    );
     return this.parseWineBottleInfo(responseText);
   }
 
   async summarizeWineMenu(menu: string, context: WineContext[]): Promise<string> {
-    const instructions = createMenuSummarySystemPrompt(context);
+    const instructions = this.promptService.createMenuSummarySystemPrompt(context);
 
+    // TODO Determine if it makes sense to continue with existing conversation
     const response = await this.openAiClient.responses.create({
       model: 'gpt-4o',
       input: menu,
@@ -138,7 +133,7 @@ export class OpenAiService {
 
     console.log(`Wine menu summary response: ${response.output_text}`);
 
-    return response.output_text;
+    return this.parseResponse(response.output_text);
   }
 
   private parseWineBottleInfo(responseText: string): WineBottleInfo | null {
@@ -175,6 +170,25 @@ export class OpenAiService {
     context: WineContext,
     vintageInfo: string | undefined,
   ): Promise<string> {
-    return this.invokeChat(describeWinePrompt(wineDetails, vintageInfo), context);
+    return this.invokeChat(
+      this.promptService.describeWinePrompt(wineDetails, vintageInfo),
+      context,
+    );
+  }
+
+  private parseResponse(responseText: string): string {
+    let response = responseText.trim();
+
+    const mdIndicator = '```markdown';
+    const endIndicator = '```';
+    if (response.startsWith(mdIndicator)) {
+      response = response.substring(mdIndicator.length);
+      console.log(`After trimming leading markdown got ${response}`);
+    }
+    if (response.endsWith(endIndicator)) {
+      response = response.substring(0, response.length - endIndicator.length);
+      console.log(`After trimming trailing markdown got ${response}`);
+    }
+    return response;
   }
 }

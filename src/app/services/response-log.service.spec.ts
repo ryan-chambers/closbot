@@ -44,7 +44,7 @@ describe('ResponseLogService', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    // TODO doesn't work. Could always extract Filesystem interaction to its own service
+    // This doesn't work. Could always extract Filesystem interaction to its own service
     // it('should write message using plugin on native app', fakeAsync(() => {
     //   spyOn(service['platform'], 'is').and.returnValue(true);
 

@@ -1,10 +1,7 @@
+import { CVintageNotes } from '@services/vintage.service.content';
 import { WineBottleColor, WineBottleDrinkHold } from './wines.model';
 
-export interface VintageReport {
-  year: number;
-  red: string;
-  white: string;
-  notes: string;
+export interface VintageReport extends CVintageNotes {
   redDrinkHold: WineBottleDrinkHold;
   whiteDrinkHold: WineBottleDrinkHold;
   rating: VintageRating;

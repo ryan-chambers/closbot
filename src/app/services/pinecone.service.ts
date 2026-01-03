@@ -7,6 +7,7 @@ import { ToastService } from '@services/toast.service';
 import { ResponseContext, TrackResponse } from './track-response.decorator';
 import { RagQueryResult, WineContext } from '@models/wines.model';
 import { ResponseLogService } from '@services/response-log.service';
+import { ContentService } from '@services/content.service';
 
 interface PineconeResponse {
   matches: Match[];
@@ -29,15 +30,33 @@ interface PineconeWineContext {
   info: string;
 }
 
+interface CPineconeService {
+  noteSuccessfullyAdded: string;
+  errorUpsertingNote: string;
+}
+
+const enPineconeContent: CPineconeService = {
+  noteSuccessfullyAdded: 'Note successfully added',
+  errorUpsertingNote: 'Error upserting note',
+};
+
+const frPineconeContent: CPineconeService = {
+  noteSuccessfullyAdded: 'Note ajoutée avec succès',
+  errorUpsertingNote: "Erreur lors de l'insertion de l'avis",
+};
+
+// These properties are used as metadata in the pinecone datastore
 const PERSONAL = 'My Notes';
 const PERSONAL_U = PERSONAL.toUpperCase();
 
-function serializeReview(review: RagQueryResult): string {
-  return `${review.content} Score: ${review.score}`;
+function serializeNote(note: RagQueryResult): string {
+  return `${note.content} Score: ${note.score}`;
 }
 
 export const serializeWineContext = (val: WineContext): string => {
-  return `Personal Reviews: ${val.personalReviews.map((r) => serializeReview(r)).join('; ')} | Other Context: ${val.otherContext.map((r) => serializeReview(r)).join('; ')}`;
+  // This content is only used for logging purposes. Rather than complicating the decorator even further
+  // and adding language as a concern, for now I will keep the content english only, but note the language.
+  return `Personal Notes: ${val.personalNotes.map((r) => serializeNote(r)).join('; ')} | Other Context: ${val.otherContext.map((r) => serializeNote(r)).join('; ')}.`;
 };
 
 @Injectable({
@@ -45,26 +64,30 @@ export const serializeWineContext = (val: WineContext): string => {
 })
 export class PineconeService {
   private readonly pineconeHost = environment.PINECONE_HOST;
+  private readonly contentService = inject(ContentService);
   responseLogService = inject(ResponseLogService);
+  private readonly http = inject(HttpClient);
+  private readonly openAiService = inject(OpenAiService);
+  private readonly toastService = inject(ToastService);
 
-  constructor(
-    private readonly http: HttpClient,
-    private readonly openAiService: OpenAiService,
-    private readonly toastService: ToastService,
-  ) {}
+  private readonly content = this.contentService.registerComponentContent(
+    enPineconeContent,
+    frPineconeContent,
+    'PineconeService',
+  );
 
-  async upsertWineReview(review: string) {
-    review = review.trim();
-    console.log('Upserting review:', review);
-    // Get the embedding vector for the review
-    const embedding: number[] = await this.openAiService.embedVector(review);
+  async upsertWineNote(note: string) {
+    note = note.trim();
+    console.log('Upserting note:', note);
+    // Get the embedding vector for the note
+    const embedding: number[] = await this.openAiService.embedVector(note);
 
     // vector request
     const vectors = [
       {
-        id: `personal-reviews-${Date.now()}`,
+        id: `personal-notes-${Date.now()}`,
         values: embedding,
-        metadata: { chunk: review, source: PERSONAL },
+        metadata: { chunk: note, source: PERSONAL },
       },
     ];
     const headers = new HttpHeaders({
@@ -82,9 +105,9 @@ export class PineconeService {
           tap((response) => {
             console.log('Upsert response:', response);
             if (response['upsertedCount'] === 1) {
-              this.toastService.showToast('Review successfully added');
+              this.toastService.showToast(this.content().noteSuccessfullyAdded);
             } else {
-              this.toastService.showToast('Error upserting review');
+              this.toastService.showToast(this.content().errorUpsertingNote);
             }
           }),
         ),
@@ -98,15 +121,16 @@ export class PineconeService {
   async getContextForQuery(query: string | number[]): Promise<WineContext> {
     const ragContext: PineconeWineContext[] = await this.getRagData(query);
 
-    const result = {
-      personalReviews: new Array<RagQueryResult>(),
+    const result: WineContext = {
+      personalNotes: new Array<RagQueryResult>(),
       otherContext: new Array<RagQueryResult>(),
     };
     ragContext.forEach((context) => {
       if (context.source.toUpperCase() === PERSONAL_U) {
-        result.personalReviews.push({ content: context.info, score: context.score });
+        result.personalNotes.push({ content: context.info, score: context.score });
       } else {
         result.otherContext.push({
+          // Note: "source" is the same in english or french; doesn't need to be translated
           content: `${context.info} (Source: ${context.source})`,
           score: context.score,
         });
