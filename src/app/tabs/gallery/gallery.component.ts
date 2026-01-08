@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
 import {
   IonImg,
   IonCol,
@@ -34,7 +34,7 @@ import { ContentService } from '@services/content.service';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GalleryComponent {
+export class GalleryComponent implements OnInit {
   private readonly galleryService = inject(GalleryService);
   private readonly router = inject(Router);
   private readonly contentService = inject(ContentService);

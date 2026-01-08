@@ -40,7 +40,9 @@ export class CameraService {
   }
 
   private handleGetPhotoError(error: unknown): Promise<Photo | undefined> {
-    // the message below is from capacitor framework
+    // The message below is from capacitor framework. It does not define a type for the error,
+    // but this property is available at run-time.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((error as any)?.message === 'User cancelled photos app') {
       return Promise.resolve(undefined);
     } else {

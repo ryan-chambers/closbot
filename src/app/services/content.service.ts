@@ -5,7 +5,7 @@ import { frAppContent } from '@models/fr.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { enAppContent } from '@models/en.model';
 
-const errorMessagesEn: { [key in ErrorCode]: string } = {
+const errorMessagesEn: Record<ErrorCode, string> = {
   [ErrorCode.NO_IMAGE_CAPTURED]: 'No image captured',
   [ErrorCode.INVALID_PHOTO_ID]: 'Photo not found!',
   [ErrorCode.NO_WINES_FROM_MENU_PHOTO]: 'Could not read any wines from the menu photo.',
@@ -15,7 +15,7 @@ const errorMessagesEn: { [key in ErrorCode]: string } = {
   [ErrorCode.BOTTLE_SUMMARIZE_FAILED]: 'Failed to summarize bottle',
 };
 
-export const errorMessagesFr: { [key in ErrorCode]: string } = {
+export const errorMessagesFr: Record<ErrorCode, string> = {
   [ErrorCode.NO_IMAGE_CAPTURED]: 'Aucune image capturée',
   [ErrorCode.INVALID_PHOTO_ID]: 'Photo introuvable !',
   [ErrorCode.NO_WINES_FROM_MENU_PHOTO]:
@@ -40,12 +40,15 @@ export class ContentService {
 
   #cBundle = signal<CAppContent>(enAppContent);
 
-  get language(): SupportedLanguage {
-    return this.currentLanguage;
-  }
-
   get appContent(): Signal<CAppContent> {
     return this.#cBundle;
+  }
+
+  /**
+   * @deprecated Use registerComponentContent instead
+   */
+  selectContent<T>(mapper: (content: CAppContent) => T): Signal<T> {
+    return computed(() => mapper(this.#cBundle()));
   }
 
   #languageChange$ = new BehaviorSubject<SupportedLanguage>(this.currentLanguage);
@@ -54,11 +57,8 @@ export class ContentService {
     return this.#languageChange$.asObservable();
   }
 
-  /**
-   * @deprecated Use registerComponentContent instead
-   */
-  selectContent<T>(mapper: (content: CAppContent) => T): Signal<T> {
-    return computed(() => mapper(this.#cBundle()));
+  get language(): SupportedLanguage {
+    return this.currentLanguage;
   }
 
   set language(lang: SupportedLanguage) {
@@ -69,11 +69,12 @@ export class ContentService {
     });
   }
 
-  componentContent: Map<string, ComponentContent<any>> = new Map<string, ComponentContent<any>>();
+  componentContent = new Map<string, ComponentContent<unknown>>();
 
   registerComponentContent<T>(en: T, fr: T, componentName: string): Signal<T> {
     if (this.componentContent.has(componentName)) {
-      return this.componentContent.get(componentName)!.signal;
+      // Type assertion is safe here because we always store T for a given componentName
+      return (this.componentContent.get(componentName)! as ComponentContent<T>).signal;
     }
 
     const contentSignal: WritableSignal<T> = signal<T>(this.currentLanguage === 'en' ? en : fr);
@@ -138,7 +139,7 @@ export class ContentService {
 
   interpolateArgs(content: string, args: Map<string, string> | object): string {
     let contentValue = content;
-    let argsMap: Map<string, string> = this.toArgMap(args);
+    const argsMap: Map<string, string> = this.toArgMap(args);
     if (argsMap.size > 0) {
       argsMap.forEach((val, key) => {
         // console.log(`Trying to replace ${key} with ${val} in ${content}`);

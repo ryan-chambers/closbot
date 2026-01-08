@@ -15,7 +15,9 @@ export class FakeWineService implements WineServiceInterface {
     this.responseLogService.recordResponseLogs();
   }
 
-  initSession(): void {}
+  initSession(): void {
+    // not implemented for fake service
+  }
 
   @TrackResponse(ResponseContext.CHAT_RESPONSE)
   async invokeChat(_: string): Promise<string> {
@@ -32,7 +34,6 @@ export class FakeWineService implements WineServiceInterface {
     return new Promise((resolve) => {
       setTimeout(() => {
         console.log(`Add note: ${note}`);
-        const responseValue = `${this.contentService.language}: Fake note added`;
         resolve();
       }, 1100);
     });

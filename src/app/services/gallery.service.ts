@@ -23,7 +23,7 @@ export class GalleryService {
 
   winePhotos = signal<WinePhoto[]>([]);
 
-  private WINE_PHOTO_STORAGE: string = 'winePhotos';
+  private WINE_PHOTO_STORAGE = 'winePhotos';
 
   public async addNewToGallery(details?: string): Promise<boolean> {
     console.log(`Adding photo to gallery with details ${details}`);
@@ -113,7 +113,7 @@ export class GalleryService {
     // “when the platform is NOT hybrid, do this”
     if (!this.platform.is('hybrid')) {
       // Display the photo by reading into base64 format
-      for (let photo of winePhotos) {
+      for (const photo of winePhotos) {
         // Read each saved photo's data from the Filesystem
         const readFile = await Filesystem.readFile({
           path: photo.filepath,

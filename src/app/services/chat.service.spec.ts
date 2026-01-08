@@ -5,7 +5,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('ChatService', () => {
   let service: ChatService;
-  let wineServiceMock = jasmine.createSpyObj('WineService', [
+  const wineServiceMock = jasmine.createSpyObj('WineService', [
     'initSession',
     'invokeChat',
     'flagChat',

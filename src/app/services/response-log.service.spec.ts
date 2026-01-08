@@ -1,7 +1,6 @@
-import { fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { ResponseLogService } from './response-log.service';
 import { ResponseContext } from './track-response.decorator';
-import { Filesystem } from '@capacitor/filesystem';
 
 describe('ResponseLogService', () => {
   let service: ResponseLogService;

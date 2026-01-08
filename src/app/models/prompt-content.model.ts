@@ -1,4 +1,4 @@
-export type CPromptService = {
+export interface CPromptService {
   menuSummary: {
     systemPrompt: string;
     personalNotes: string;
@@ -14,7 +14,7 @@ export type CPromptService = {
     myNotes: string;
   };
   parseWineMenuPrompt: string;
-};
+}
 
 export const enPromptContent: CPromptService = {
   menuSummary: {
