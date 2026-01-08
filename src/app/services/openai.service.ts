@@ -39,7 +39,7 @@ export class OpenAiService {
     return this.embedVectors([query]).then((vectors) => vectors[0]);
   }
 
-  embedVectors(queries: string[]): Promise<Array<number[]>> {
+  embedVectors(queries: string[]): Promise<number[][]> {
     return this.openAiClient.embeddings
       .create({ model: this.embeddingModel, input: queries })
       .then((res) => {
@@ -139,7 +139,7 @@ export class OpenAiService {
   private parseWineBottleInfo(responseText: string): WineBottleInfo | null {
     try {
       const lines = responseText.split('\n');
-      const info: any = {};
+      const info: Record<string, string | undefined> = {};
 
       for (const line of lines) {
         const [key, value] = line.split(':').map((part) => part.trim());
@@ -149,11 +149,11 @@ export class OpenAiService {
         }
       }
 
-      if (info.producer && info.producer.toUpperCase() !== 'N/A') {
+      if (info['producer'] && info['producer'].toUpperCase() !== 'N/A') {
         return {
-          producer: info.producer,
-          appellation: info.appellation,
-          vintage: info.vintage,
+          producer: info['producer'],
+          appellation: info['appellation'],
+          vintage: info['vintage'],
         };
       } else {
         console.log('Producer not found in response.');

@@ -151,7 +151,7 @@ export class PineconeService {
 
   queryPinecone(
     query: string | number[],
-    numberOfResults: number = 3,
+    numberOfResults = 3,
   ): Observable<PineconeWineContext[]> {
     const embedding: Observable<number[]> = Array.isArray(query)
       ? of(query as number[])

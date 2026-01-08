@@ -35,7 +35,7 @@ export class EditNoteComponent implements OnInit {
   // Resolver guarantees photo is present
   photo = computed(() => this.data()?.['photo'] as WinePhoto);
 
-  notes: string = '';
+  notes = '';
   notesCreatedYet = false;
 
   content = this.contentService.registerComponentContent(

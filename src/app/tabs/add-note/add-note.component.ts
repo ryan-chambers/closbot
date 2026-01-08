@@ -38,6 +38,7 @@ export class AddNoteComponent {
   private readonly wineService = inject(WineService);
   private readonly toastService = inject(ToastService);
   private readonly contentService = inject(ContentService);
+  private readonly fb = inject(FormBuilder);
 
   content = this.contentService.registerComponentContent(
     enAddNoteContent,
@@ -47,7 +48,7 @@ export class AddNoteComponent {
 
   noteForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     this.noteForm = this.fb.group(
       {
         note: '',

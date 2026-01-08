@@ -32,7 +32,7 @@ export class ChatComponent {
   private readonly wineService = inject(WineService);
   private readonly contentService = inject(ContentService);
 
-  currentMessage: string = '';
+  currentMessage = '';
   waiting = signal(false);
 
   content = this.contentService.registerComponentContent(enChat, frChat, 'ChatComponent');
@@ -103,7 +103,9 @@ export class ChatComponent {
       this.chatService.addSystemMessage(recommendation);
     } catch (err: unknown) {
       let msg = String(err);
-      if (msg.hasOwnProperty('message')) {
+      if (Object.prototype.hasOwnProperty.call(err, 'message')) {
+        // checked for existence of message above
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         msg = (err as any).message;
       }
       this.chatService.addSystemMessage(`${this.contentService.translateError(errorCode)}: ${msg}`);

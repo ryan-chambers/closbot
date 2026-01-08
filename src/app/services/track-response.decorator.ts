@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// any allowed for decorator implementation
 import { inject } from '@angular/core';
 import { ResponseLogService } from './response-log.service';
 
@@ -11,14 +13,14 @@ export enum ResponseContext {
   WINE_BOTTLE_IMAGE_DETAILS = 'WINE_BOTTLE_IMAGE_DETAILS',
 }
 
-export type TrackResponseOptions<T> = {
+export interface TrackResponseOptions<T> {
   context: ResponseContext;
   /**
    * Optional serializer to convert a non-string payload into a string for logging.
    * If not provided the decorator will attempt JSON.stringify and skip logging on failure.
    */
   serializer?: (value: T) => string | null | undefined;
-};
+}
 
 /**
  * Method decorator that records the return value of the decorated method into ResponseLogService.
@@ -52,56 +54,51 @@ export function TrackResponse(contextOrOptions: ResponseContext | TrackResponseO
 
     descriptor.value = function (...args: any[]) {
       // Call the original method
-      try {
-        const result = original.apply(this, args);
+      const result = original.apply(this, args);
 
-        // Prefer an instance-level ResponseLogService (this.responseLogService)
-        // if available, otherwise fall back to DI-based getter.
-        // Use a safe any cast so TypeScript won't complain about unknown 'responseLogService' on `this`.
-        const logger: ResponseLogService | null =
-          this && (this as any).responseLogService
-            ? (this as any).responseLogService
-            : getResponseLogService();
+      // Prefer an instance-level ResponseLogService (this.responseLogService)
+      // if available, otherwise fall back to DI-based getter.
+      // Use a safe any cast so TypeScript won't complain about unknown 'responseLogService' on `this`.
+      const logger: ResponseLogService | null =
+        this && (this as any).responseLogService
+          ? (this as any).responseLogService
+          : getResponseLogService();
 
-        const trySerialize = (val: any): string | undefined => {
-          if (typeof val === 'string') {
-            return val;
-          }
-          if (serializer) {
-            try {
-              return serializer(val) ?? undefined;
-            } catch (e) {
-              console.warn('TrackResponse: serializer threw error', e);
-              return undefined;
-            }
-          }
+      const trySerialize = (val: any): string | undefined => {
+        if (typeof val === 'string') {
+          return val;
+        }
+        if (serializer) {
           try {
-            return JSON.stringify(val);
+            return serializer(val) ?? undefined;
           } catch (e) {
+            console.warn('TrackResponse: serializer threw error', e);
             return undefined;
           }
-        };
-
-        if (result && typeof result.then === 'function') {
-          return result.then((r: any) => {
-            const text = trySerialize(r);
-            if (typeof text === 'string') {
-              logger?.add(text, options.context);
-            }
-            return r;
-          });
         }
-
-        const text = trySerialize(result);
-        if (typeof text === 'string') {
-          logger?.add(text, options.context);
+        try {
+          return JSON.stringify(val);
+        } catch (_) {
+          return undefined;
         }
+      };
 
-        return result;
-      } catch (err) {
-        // rethrow after optional logging
-        throw err;
+      if (result && typeof result.then === 'function') {
+        return result.then((r: any) => {
+          const text = trySerialize(r);
+          if (typeof text === 'string') {
+            logger?.add(text, options.context);
+          }
+          return r;
+        });
       }
+
+      const text = trySerialize(result);
+      if (typeof text === 'string') {
+        logger?.add(text, options.context);
+      }
+
+      return result;
     };
 
     return descriptor;
@@ -115,7 +112,7 @@ function getResponseLogService(): ResponseLogService | null {
   // try reading from (window as any).ng ? Not implemented here — return null.
   try {
     return inject(ResponseLogService);
-  } catch (e) {
+  } catch (_) {
     console.warn('TrackResponse: no Angular injection context; cannot log response');
     return null;
   }
