@@ -10,7 +10,7 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { provideHttpClient } from '@angular/common/http';
-import { ErrorHandler } from '@angular/core';
+import { ErrorHandler, provideZoneChangeDetection } from '@angular/core';
 import { CbErrorHandler } from './app/errors/error.handler';
 import { provideMarkdown } from 'ngx-markdown';
 
@@ -19,7 +19,7 @@ defineCustomElements(window);
 
 bootstrapApplication(AppComponent, {
   providers: [
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    provideZoneChangeDetection(),{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: ErrorHandler, useClass: CbErrorHandler },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
