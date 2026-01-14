@@ -19,7 +19,8 @@ defineCustomElements(window);
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideZoneChangeDetection(),{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    provideZoneChangeDetection(),
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: ErrorHandler, useClass: CbErrorHandler },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
