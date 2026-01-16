@@ -1,3 +1,4 @@
+import { expect, it, describe } from 'vitest';
 import { WineContext } from '@models/wines.model';
 import { serializeWineContext } from './pinecone.service';
 
@@ -16,7 +17,7 @@ describe('PineconeService', () => {
       };
 
       expect(serializeWineContext(wineContext)).toBe(
-        'Personal Reviews: Excellent wine with rich flavors. Score: 5; Good balance and aroma. Score: 4 | Other Context: Average taste, nothing special. Score: 3; Not to my liking. Score: 2',
+        'Personal Notes: Excellent wine with rich flavors. Score: 5; Good balance and aroma. Score: 4 | Other Context: Average taste, nothing special. Score: 3; Not to my liking. Score: 2.',
       );
     });
   });
