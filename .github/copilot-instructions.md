@@ -13,13 +13,6 @@ Closbot is an Angular/Ionic POC app for wine recommendations and note management
 - **Chat**: `chat.service.ts` manages chat state and message flow, using wine and language services.
 - **Response Logging**: `response-log.service.ts` and `track-response.decorator.ts` log and track AI responses for debugging and flagging hallucinations.
 
-## Developer Workflows
-
-- **Build**: `pnpm run build` or `npm run build` (uses Angular CLI)
-- **Serve**: `pnpm start` or `npm start` for local dev; `start:any` for networked/devices
-- **Test**: `pnpm test` or `npm test` (Karma/Jasmine)
-- **Android Build**: Use Capacitor/Gradle scripts in `android/` for native builds
-
 ## Project-Specific Patterns
 
 - **Service Injection**: Use Angular's `inject()` for service dependencies, not constructor injection.

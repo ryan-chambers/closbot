@@ -1,12 +1,30 @@
+import { beforeEach, expect, it, describe, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { ResponseLogService } from './response-log.service';
 import { ResponseContext } from './track-response.decorator';
+import { ToastService } from './toast.service';
+import { Filesystem } from '@capacitor/filesystem';
+
+vi.mock('@capacitor/filesystem', () => ({
+  Filesystem: {
+    appendFile: vi.fn(),
+  },
+  Directory: {},
+  Encoding: {},
+}));
 
 describe('ResponseLogService', () => {
   let service: ResponseLogService;
 
+  const mockToastService: Partial<ToastService> = {
+    showToast: vi.fn(),
+  };
+
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [{ provide: ToastService, useValue: mockToastService }],
+    });
+
     service = TestBed.inject(ResponseLogService);
     service.clear();
   });
@@ -36,29 +54,25 @@ describe('ResponseLogService', () => {
 
   describe('#recordResponseLogs', () => {
     it('should do nothing when there are no messages', () => {
-      const spy = spyOn(service, 'clear');
+      const spy = vi.spyOn(service, 'clear');
 
       service.recordResponseLogs();
 
       expect(spy).not.toHaveBeenCalled();
     });
 
-    // This doesn't work. Could always extract Filesystem interaction to its own service
-    // it('should write message using plugin on native app', fakeAsync(() => {
-    //   spyOn(service['platform'], 'is').and.returnValue(true);
+    it('should write message using plugin on native app', () => {
+      const clearSpy = vi.spyOn(service, 'clear');
+      vi.spyOn(service['platform'], 'is').mockReturnValue(true);
 
-    //   const spy = spyOn(Filesystem, 'appendFile').and.returnValue(Promise.resolve());
+      const appendFileSpy = vi.spyOn(Filesystem, 'appendFile').mockResolvedValue();
 
-    //   service.add('one', ResponseContext.CHAT_RESPONSE);
-    //   service.recordResponseLogs();
+      service.add('one', ResponseContext.CHAT_RESPONSE);
+      service.recordResponseLogs();
 
-    //   flush();
-    //   expect(spy).toHaveBeenCalledOnceWith(
-    //     jasmine.objectContaining({
-    //       data: jasmine.stringMatching(/CHAT_RESPONSE : one/),
-    //     }),
-    //   );
-    // }));
+      expect(clearSpy).toHaveBeenCalled();
+      expect(appendFileSpy).toHaveBeenCalled();
+    });
   });
 
   describe('#generateLogFileLine', () => {
