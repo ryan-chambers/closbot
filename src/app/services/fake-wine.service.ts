@@ -22,7 +22,7 @@ export class FakeWineService implements WineServiceInterface {
   @TrackResponse(ResponseContext.CHAT_RESPONSE)
   async invokeChat(_: string): Promise<string> {
     console.log('FakeWineService invoked');
-    const responseValue = `${this.contentService.language}: Fake chat response`;
+    const responseValue = `${this.contentService.language}: ${this.longResponse}`;
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(responseValue);
@@ -39,7 +39,7 @@ export class FakeWineService implements WineServiceInterface {
     });
   }
 
-  readonly menuReco = `Response: This wine menu offers a delightful selection primarily focused on Chardonnay from Burgundy, with a strong representation of Corton-Charlemagne Grand Cru and some premier cru options from Beaune.
+  readonly longResponse = `Response: This wine menu offers a delightful selection primarily focused on Chardonnay from Burgundy, with a strong representation of Corton-Charlemagne Grand Cru and some premier cru options from Beaune.
 
 1. **Bourgogne Côte d'Or Chardonnay Options**:
    - Offers fresh and accessible Chardonnay selections ideal for those seeking bright fruit flavors with a touch of regional characteristics.
@@ -62,7 +62,7 @@ export class FakeWineService implements WineServiceInterface {
   async readWineMenu(_base64Image: string): Promise<string> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(`${this.contentService.language}: ${this.menuReco}`);
+        resolve(`${this.contentService.language}: ${this.longResponse}`);
       }, 3000);
     });
   }

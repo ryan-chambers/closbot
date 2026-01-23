@@ -39,7 +39,7 @@ export class ChatComponent {
 
   sendMessage(): void {
     if (this.currentMessage.trim()) {
-      this.scrollToBottom();
+      this.scrollToNextMessage();
       this.getChatResponse(this.currentMessage);
 
       this.currentMessage = '';
@@ -49,7 +49,7 @@ export class ChatComponent {
   clearChat(): void {
     this.currentMessage = '';
     this.chatService.initChatSession();
-    this.scrollToBottom();
+    this.scrollToNextMessage();
   }
 
   private async getChatResponse(userMessage: string) {
@@ -58,14 +58,14 @@ export class ChatComponent {
 
     this.waiting.set(false);
 
-    this.scrollToBottom();
+    this.scrollToNextMessage();
   }
 
-  private scrollToBottom() {
+  private scrollToNextMessage() {
     setTimeout(() => {
-      const chatContainer = document.querySelector('.chat-messages');
-      if (chatContainer) {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+      const messages: Element[] = Array.from(document.querySelectorAll('.message-header'));
+      if (messages.length > 0) {
+        messages[messages.length - 1].scrollIntoView({ behavior: 'smooth' });
       }
     });
   }
@@ -101,6 +101,7 @@ export class ChatComponent {
 
       const recommendation = await consumer(image);
       this.chatService.addSystemMessage(recommendation);
+      this.scrollToNextMessage();
     } catch (err: unknown) {
       let msg = String(err);
       if (Object.prototype.hasOwnProperty.call(err, 'message')) {
@@ -109,9 +110,9 @@ export class ChatComponent {
         msg = (err as any).message;
       }
       this.chatService.addSystemMessage(`${this.contentService.translateError(errorCode)}: ${msg}`);
+      this.scrollToNextMessage();
     } finally {
       this.waiting.set(false);
-      this.scrollToBottom();
     }
   }
 
