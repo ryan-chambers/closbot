@@ -7,9 +7,10 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { ErrorCode } from '@errors/error.codes';
-import { GalleryService, WinePhoto } from '@services/gallery.service';
+import { GalleryService } from '@services/gallery.service';
 import { ContentService } from '@services/content.service';
 import { ToastService } from '@services/toast.service';
+import { WinePhoto } from '@models/photo.model';
 
 export const photoResolver: ResolveFn<WinePhoto> = async (
   route: ActivatedRouteSnapshot,

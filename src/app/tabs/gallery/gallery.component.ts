@@ -10,16 +10,27 @@ import {
   IonHeader,
   IonToolbar,
   IonTitle,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  ActionSheetController,
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from '@components/header/header.component';
 import { GalleryService } from '@services/gallery.service';
 import { Router } from '@angular/router';
 import { ContentService } from '@services/content.service';
+import { addIcons } from 'ionicons';
+import { add } from 'ionicons/icons';
+import { CameraSource } from '@capacitor/camera';
+import { enGallery, frGallery } from './gallery.component.content';
 
 @Component({
   selector: 'app-gallery',
   templateUrl: 'gallery.component.html',
   imports: [
+    IonIcon,
+    IonFab,
+    IonFabButton,
     HeaderComponent,
     IonButton,
     IonCol,
@@ -38,6 +49,7 @@ export class GalleryComponent implements OnInit {
   private readonly galleryService = inject(GalleryService);
   private readonly router = inject(Router);
   private readonly contentService = inject(ContentService);
+  private readonly actionSheetCtrl = inject(ActionSheetController);
 
   winePhotos = this.galleryService.winePhotos;
 
@@ -45,7 +57,11 @@ export class GalleryComponent implements OnInit {
 
   photoToDeleteId?: string;
 
-  content = this.contentService.selectContent((content) => content.galleryComponent);
+  content = this.contentService.registerComponentContent(enGallery, frGallery, 'GalleryComponent');
+
+  constructor() {
+    addIcons({ add });
+  }
 
   async ngOnInit() {
     await this.galleryService.loadSaved();
@@ -74,5 +90,34 @@ export class GalleryComponent implements OnInit {
     }
 
     this.isModalOpen.set(false);
+  }
+
+  async onAddPhoto(): Promise<void> {
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Add Photo',
+      buttons: [
+        {
+          text: this.content().takePhoto,
+          handler: () => {
+            this.capture(CameraSource.Camera);
+          },
+        },
+        {
+          text: this.content().chooseFromLibrary,
+          handler: () => {
+            this.capture(CameraSource.Photos);
+          },
+        },
+        {
+          text: this.content().cancel,
+          role: 'cancel',
+        },
+      ],
+    });
+    await actionSheet.present();
+  }
+
+  private async capture(source: CameraSource) {
+    await this.galleryService.addNewToGallery(source);
   }
 }

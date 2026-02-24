@@ -1,10 +1,11 @@
 <app-header></app-header>
 
 <ion-content [fullscreen]="true">
-  <ion-row>
+  <ion-row (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
     <ion-img [src]="photo().webviewPath"></ion-img>
   </ion-row>
   <ion-row>
+    <p>{{ captureDate() }}</p>
     <ion-textarea [(ngModel)]="notes" [placeholder]="content().enterNote" rows="3"></ion-textarea>
     <div>
       <ion-button (click)="submitNote()">{{ content().saveNotes }}</ion-button>

@@ -5,8 +5,12 @@
     <ion-row>
       @for (photo of winePhotos(); track photo.filepath) {
         <ion-col size="6">
-          <ion-img [src]="photo.webviewPath"></ion-img>
-          <ion-button size="small" (click)="editNote(photo.id)">{{ content().edit }}</ion-button>
+          <ion-img
+            [src]="photo.webviewPath"
+            (click)="editNote(photo.id)"
+            role="button"
+            tabindex="0"
+          ></ion-img>
           <ion-button size="small" (click)="openDeleteModal(photo.id)">{{
             content().delete
           }}</ion-button>
@@ -33,4 +37,9 @@
       </ng-template>
     </ion-modal>
   </ion-grid>
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="onAddPhoto()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

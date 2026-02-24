@@ -5,15 +5,6 @@ export type SupportedLanguage = 'en' | 'fr';
  * other classes in the app.
  */
 
-export interface CGalleryComponent {
-  edit: string;
-  delete: string;
-  noPhotos: string;
-  deleteConfirm: string;
-  yes: string;
-  no: string;
-}
-
 export interface CVintageReportComponent {
   vintageReport: string;
   regionalGuidelines: string;
@@ -32,7 +23,6 @@ export interface CResponseLogService {
 }
 
 export interface CAppContent {
-  galleryComponent: CGalleryComponent;
   vintageReportComponent: CVintageReportComponent;
   headerComponent: CHeaderComponent;
   responseLogService: CResponseLogService;
