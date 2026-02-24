@@ -8,14 +8,15 @@ import {
 } from '@angular/core';
 import { IonImg, IonRow, IonContent, IonButton, IonTextarea } from '@ionic/angular/standalone';
 import { HeaderComponent } from '@components/header/header.component';
-import { GalleryService, WinePhoto } from '@services/gallery.service';
-import { ActivatedRoute, Data } from '@angular/router';
+import { GalleryService } from '@services/gallery.service';
+import { ActivatedRoute, Data, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '@services/toast.service';
 import { WineService } from '@services/wine.service';
 import { ContentService } from '@services/content.service';
 import { enEditNote, frEditNote } from './edit-note.component.content';
+import { WinePhoto } from '@models/photo.model';
 
 @Component({
   selector: 'app-edit-note',
@@ -29,6 +30,9 @@ export class EditNoteComponent implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly wineService = inject(WineService);
   private readonly contentService = inject(ContentService);
+  private readonly router = inject(Router);
+
+  readonly SWIPE_THRESHOLD = 50;
 
   private data: Signal<Data | undefined> = toSignal(this.route.data);
 
@@ -38,11 +42,26 @@ export class EditNoteComponent implements OnInit {
   notes = '';
   notesCreatedYet = false;
 
+  private touchStartX = 0;
+
   content = this.contentService.registerComponentContent(
     enEditNote,
     frEditNote,
     'EditNoteComponent',
   );
+
+  captureDate = computed(() => {
+    const p = this.photo();
+    if (!p.date) {
+      return '';
+    }
+    const date = new Date(p.date);
+    return date.toLocaleDateString(this.contentService.language, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  });
 
   async submitNote() {
     console.log('Submitting note:', this.notes);
@@ -66,5 +85,24 @@ export class EditNoteComponent implements OnInit {
     }
 
     this.notes = this.photo().wineDetails ?? '';
+  }
+
+  onTouchStart(event: TouchEvent) {
+    this.touchStartX = event.touches[0].screenX;
+  }
+
+  onTouchEnd(event: TouchEvent) {
+    const deltaX = event.changedTouches[0].screenX - this.touchStartX;
+
+    let nextPhotoId = undefined;
+    if (deltaX < -this.SWIPE_THRESHOLD) {
+      nextPhotoId = this.galleryService.getNextPhotoId(this.photo().id);
+    } else if (deltaX > this.SWIPE_THRESHOLD) {
+      nextPhotoId = this.galleryService.getPreviousPhotoId(this.photo().id);
+    }
+
+    if (nextPhotoId) {
+      this.router.navigate(['/tabs/edit-note', nextPhotoId]);
+    }
   }
 }

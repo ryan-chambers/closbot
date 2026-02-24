@@ -7,14 +7,6 @@ export const frAppContent: CAppContent = {
   headerComponent: {
     useRealServices: 'De vrais services ?',
   },
-  galleryComponent: {
-    edit: 'Modifier',
-    delete: 'Supprimer',
-    noPhotos: 'Aucune photo disponible.',
-    deleteConfirm: 'Êtes-vous sûr de vouloir supprimer la photo ?',
-    yes: 'Oui',
-    no: 'Non',
-  },
   vintageReportComponent: {
     vintageReport: 'Rapport de millésime',
     regionalGuidelines: 'Directives régionales',

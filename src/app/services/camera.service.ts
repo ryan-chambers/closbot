@@ -3,19 +3,16 @@ import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera
 import { ContentService } from './content.service';
 import { ErrorCode } from '@errors/error.codes';
 
+export type CaptureResult = 'ok' | 'cancelled' | 'error';
+
 @Injectable({
   providedIn: 'root',
 })
 export class CameraService {
   private readonly contentService = inject(ContentService);
 
-  async takePhotoAsBase64(): Promise<string | undefined> {
-    const photo = await Camera.getPhoto({
-      resultType: CameraResultType.DataUrl,
-      source: CameraSource.Camera,
-      quality: 100,
-      width: 512,
-    }).catch(this.handleGetPhotoError.bind(this));
+  async takePhotoAsBase64(source: CameraSource): Promise<string | undefined> {
+    const photo = await this.takePhoto(source);
 
     if (!photo) {
       return undefined;
@@ -30,10 +27,10 @@ export class CameraService {
     }
   }
 
-  async takePhoto(): Promise<Photo | undefined> {
+  async takePhoto(source: CameraSource): Promise<Photo | undefined> {
     return await Camera.getPhoto({
       resultType: CameraResultType.Uri,
-      source: CameraSource.Camera,
+      source,
       width: 512,
       quality: 60,
     }).catch(this.handleGetPhotoError.bind(this));

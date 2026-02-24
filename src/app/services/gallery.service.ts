@@ -1,17 +1,11 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { Photo } from '@capacitor/camera';
+import { CameraSource, Photo } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
 import { Platform } from '@ionic/angular';
 import { CameraService } from './camera.service';
-
-export interface WinePhoto {
-  id: string;
-  filepath: string;
-  webviewPath?: string;
-  wineDetails?: string;
-}
+import { WinePhoto } from '@models/photo.model';
 
 @Injectable({
   providedIn: 'root',
@@ -25,9 +19,9 @@ export class GalleryService {
 
   private WINE_PHOTO_STORAGE = 'winePhotos';
 
-  public async addNewToGallery(details?: string): Promise<boolean> {
-    console.log(`Adding photo to gallery with details ${details}`);
-    const capturedPhoto = await this.cameraService.takePhoto();
+  public async addNewToGallery(source: CameraSource): Promise<boolean> {
+    console.log(`Adding photo to gallery`);
+    const capturedPhoto = await this.cameraService.takePhoto(source);
 
     if (!capturedPhoto) {
       return Promise.resolve(false);
@@ -36,7 +30,11 @@ export class GalleryService {
     // Save the picture and add it to gallery
     const id = String(Date.now());
     const savedImageFile = await this.savePicture(capturedPhoto, id);
-    const newPhoto: WinePhoto = { ...savedImageFile, wineDetails: details, id };
+    const newPhoto: WinePhoto = {
+      ...savedImageFile,
+      id,
+      date: new Date().toISOString(),
+    };
 
     const photos = [...this.winePhotos()];
     photos.unshift(newPhoto);
@@ -186,4 +184,22 @@ export class GalleryService {
       };
       reader.readAsDataURL(blob);
     });
+
+  getNextPhotoId(currentId: string): string | undefined {
+    const photos = this.winePhotos();
+    const currentIndex = photos.findIndex((p) => p.id === currentId);
+    if (currentIndex >= 0 && currentIndex < photos.length - 1) {
+      return photos[currentIndex + 1].id;
+    }
+    return undefined;
+  }
+
+  getPreviousPhotoId(currentId: string): string | undefined {
+    const photos = this.winePhotos();
+    const currentIndex = photos.findIndex((p) => p.id === currentId);
+    if (currentIndex > 0) {
+      return photos[currentIndex - 1].id;
+    }
+    return undefined;
+  }
 }
