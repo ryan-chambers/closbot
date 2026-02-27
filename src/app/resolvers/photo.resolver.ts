@@ -10,12 +10,11 @@ import { ErrorCode } from '@errors/error.codes';
 import { GalleryService } from '@services/gallery.service';
 import { ContentService } from '@services/content.service';
 import { ToastService } from '@services/toast.service';
-import { WinePhoto } from '@models/photo.model';
 
-export const photoResolver: ResolveFn<WinePhoto> = async (
+export const photoIdResolver: ResolveFn<string> = async (
   route: ActivatedRouteSnapshot,
   _state: RouterStateSnapshot,
-): Promise<WinePhoto | RedirectCommand> => {
+): Promise<string | RedirectCommand> => {
   const galleryService = inject(GalleryService);
   const toastService = inject(ToastService);
   const router = inject(Router);
@@ -30,5 +29,5 @@ export const photoResolver: ResolveFn<WinePhoto> = async (
     return new RedirectCommand(router.parseUrl('/tabs/gallery'));
   }
 
-  return photo;
+  return photo.id;
 };

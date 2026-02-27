@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
-import { photoResolver } from '@resolvers/photo.resolver';
+import { photoIdResolver } from '@resolvers/photo.resolver';
 
 export const routes: Routes = [
   {
@@ -25,7 +25,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./edit-note/edit-note.component').then((m) => m.EditNoteComponent),
         resolve: {
-          photo: photoResolver,
+          photo: photoIdResolver,
         },
       },
       {
