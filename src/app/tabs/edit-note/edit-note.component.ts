@@ -6,7 +6,17 @@ import {
   OnInit,
   Signal,
 } from '@angular/core';
-import { IonImg, IonRow, IonContent, IonButton, IonTextarea } from '@ionic/angular/standalone';
+import {
+  IonImg,
+  IonRow,
+  IonContent,
+  IonButton,
+  IonTextarea,
+  IonInput,
+  IonChip,
+  IonLabel,
+  IonIcon,
+} from '@ionic/angular/standalone';
 import { HeaderComponent } from '@components/header/header.component';
 import { GalleryService } from '@services/gallery.service';
 import { ActivatedRoute, Data, Router } from '@angular/router';
@@ -17,11 +27,26 @@ import { WineService } from '@services/wine.service';
 import { ContentService } from '@services/content.service';
 import { enEditNote, frEditNote } from './edit-note.component.content';
 import { WinePhoto } from '@models/photo.model';
+import { addIcons } from 'ionicons';
+import { closeCircle } from 'ionicons/icons';
 
 @Component({
   selector: 'app-edit-note',
   templateUrl: 'edit-note.component.html',
-  imports: [FormsModule, HeaderComponent, IonButton, IonContent, IonImg, IonRow, IonTextarea],
+  imports: [
+    IonIcon,
+    IonLabel,
+    FormsModule,
+    HeaderComponent,
+    IonButton,
+    IonChip,
+    IonContent,
+    IonIcon,
+    IonImg,
+    IonInput,
+    IonRow,
+    IonTextarea,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditNoteComponent implements OnInit {
@@ -36,8 +61,12 @@ export class EditNoteComponent implements OnInit {
 
   private data: Signal<Data | undefined> = toSignal(this.route.data);
 
-  // Resolver guarantees photo is present
-  photo = computed(() => this.data()?.['photo'] as WinePhoto);
+  photoId = computed(() => this.data()?.['photo'] as string);
+
+  photo = computed(() => {
+    // Resolver guarantees photo is present
+    return this.galleryService.getPhotoById(this.photoId()) as unknown as WinePhoto;
+  });
 
   notes = '';
   notesCreatedYet = false;
@@ -62,6 +91,10 @@ export class EditNoteComponent implements OnInit {
       day: 'numeric',
     });
   });
+
+  constructor() {
+    addIcons({ closeCircle });
+  }
 
   async submitNote() {
     console.log('Submitting note:', this.notes);
@@ -104,5 +137,21 @@ export class EditNoteComponent implements OnInit {
     if (nextPhotoId) {
       this.router.navigate(['/tabs/edit-note', nextPhotoId]);
     }
+  }
+
+  addLabel(event: Event) {
+    const input = event.target as HTMLIonInputElement;
+    const value = (typeof input.value === 'string' ? input.value : '')?.trim();
+    if (!value) {
+      return;
+    }
+
+    input.value = '';
+
+    this.galleryService.addLabelToPhoto(this.photo().id, value);
+  }
+
+  async removeLabel(label: string) {
+    await this.galleryService.removeLabelFromPhoto(this.photo().id, label);
   }
 }

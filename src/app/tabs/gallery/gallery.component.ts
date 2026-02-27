@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@angular/core';
 import {
   IonImg,
   IonCol,
@@ -14,20 +14,27 @@ import {
   IonFabButton,
   IonIcon,
   ActionSheetController,
+  IonSearchbar,
+  SearchbarCustomEvent,
+  IonChip,
+  IonLabel,
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from '@components/header/header.component';
 import { GalleryService } from '@services/gallery.service';
 import { Router } from '@angular/router';
 import { ContentService } from '@services/content.service';
 import { addIcons } from 'ionicons';
-import { add } from 'ionicons/icons';
+import { add, closeCircle } from 'ionicons/icons';
 import { CameraSource } from '@capacitor/camera';
 import { enGallery, frGallery } from './gallery.component.content';
 
 @Component({
   selector: 'app-gallery',
   templateUrl: 'gallery.component.html',
+  styleUrl: 'gallery.component.scss',
   imports: [
+    IonLabel,
+    IonChip,
     IonIcon,
     IonFab,
     IonFabButton,
@@ -40,18 +47,23 @@ import { enGallery, frGallery } from './gallery.component.content';
     IonImg,
     IonModal,
     IonRow,
+    IonSearchbar,
     IonTitle,
     IonToolbar,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GalleryComponent implements OnInit {
+export class GalleryComponent {
   private readonly galleryService = inject(GalleryService);
   private readonly router = inject(Router);
   private readonly contentService = inject(ContentService);
   private readonly actionSheetCtrl = inject(ActionSheetController);
 
-  winePhotos = this.galleryService.winePhotos;
+  searchTerm = this.galleryService.searchTerm;
+  selectedTag = this.galleryService.selectedTag;
+  uniqueLabels = this.galleryService.uniqueLabels;
+  winePhotos = this.galleryService.filteredPhotos;
+  allPhotos = this.galleryService.winePhotos;
 
   isModalOpen = signal(false);
 
@@ -60,12 +72,17 @@ export class GalleryComponent implements OnInit {
   content = this.contentService.registerComponentContent(enGallery, frGallery, 'GalleryComponent');
 
   constructor() {
-    addIcons({ add });
+    addIcons({ add, closeCircle });
   }
 
-  async ngOnInit() {
-    await this.galleryService.loadSaved();
-  }
+  matchingLabels = computed(() => {
+    const searchTerm = this.searchTerm().toLowerCase().trim();
+    if (!searchTerm || this.selectedTag()) {
+      return [];
+    }
+
+    return this.uniqueLabels().filter((label) => label.toLowerCase().includes(searchTerm));
+  });
 
   openDeleteModal(photoId: string) {
     this.photoToDeleteId = photoId;
@@ -119,5 +136,18 @@ export class GalleryComponent implements OnInit {
 
   private async capture(source: CameraSource) {
     await this.galleryService.addNewToGallery(source);
+  }
+
+  onSearch(event: SearchbarCustomEvent) {
+    this.galleryService.searchTerm.set(event.detail.value ?? '');
+  }
+
+  onClearSearch() {
+    this.galleryService.searchTerm.set('');
+  }
+
+  onTagTap(tag: string) {
+    this.galleryService.selectTag(tag);
+    this.galleryService.searchTerm.set('');
   }
 }

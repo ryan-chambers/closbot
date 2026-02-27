@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { CameraSource, Photo } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
@@ -13,11 +13,49 @@ import { WinePhoto } from '@models/photo.model';
 export class GalleryService {
   private readonly cameraService = inject(CameraService);
 
-  platform = inject(Platform);
+  private readonly platform = inject(Platform);
 
   winePhotos = signal<WinePhoto[]>([]);
 
+  filteredPhotos = computed(() => {
+    let result = this.winePhotos();
+    const tag = this.selectedTag();
+    if (tag && this.uniqueLabels().includes(tag)) {
+      result = result.filter((photo) => photo.labels?.includes(tag));
+    }
+
+    const term = this.searchTerm().toLowerCase();
+    if (term) {
+      result = result.filter((photo) =>
+        photo.labels?.some((label) => label.toLowerCase().includes(term)),
+      );
+    }
+
+    return result;
+  });
+
   private WINE_PHOTO_STORAGE = 'winePhotos';
+
+  searchTerm = signal('');
+  selectedTag = signal<string | null>(null);
+
+  private _loaded = false;
+
+  constructor() {
+    this.loadSavedOnce();
+  }
+
+  private async loadSavedOnce() {
+    if (!this._loaded) {
+      await this.loadSaved();
+      this._loaded = true;
+    }
+  }
+
+  uniqueLabels = computed(() => {
+    const labels = new Set<string>(this.winePhotos().flatMap((photo) => photo.labels ?? []));
+    return Array.from(labels).sort();
+  });
 
   public async addNewToGallery(source: CameraSource): Promise<boolean> {
     console.log(`Adding photo to gallery`);
@@ -91,12 +129,12 @@ export class GalleryService {
     this.savePhotos(photos);
   }
 
-  public async getPhotoById(id: string | null): Promise<WinePhoto | undefined> {
+  public getPhotoById(id: string | null): WinePhoto | undefined {
     if (!id) {
       console.warn('Asked for null id');
       return undefined;
     }
-    await this.loadSaved();
+
     return this.winePhotos().find((photo) => photo.id === id);
   }
 
@@ -118,7 +156,7 @@ export class GalleryService {
           directory: Directory.Data,
         });
 
-        console.log(`Loaded file with path ${photo.filepath}`);
+        // console.log(`Loaded file with path ${photo.filepath}`);
         // Web platform only: Load the photo as base64 data
         photo.webviewPath = `data:image/jpeg;base64,${readFile.data}`;
       }
@@ -201,5 +239,39 @@ export class GalleryService {
       return photos[currentIndex - 1].id;
     }
     return undefined;
+  }
+
+  async addLabelToPhoto(photoId: string, label: string) {
+    const photo = this.getPhotoById(photoId);
+
+    if (!photo) {
+      console.warn(`Tried to add label to photo with id ${photoId} but not found`);
+      return;
+    }
+
+    if (photo.labels?.includes(label)) {
+      return;
+    }
+
+    const updated = this.winePhotos().map((p) =>
+      p.id === photoId ? { ...p, labels: [...(p.labels ?? []), label] } : p,
+    );
+
+    this.savePhotos(updated);
+  }
+
+  async removeLabelFromPhoto(photoId: string, label: string) {
+    const updated = this.winePhotos().map((p) => {
+      if (p.id === photoId) {
+        return { ...p, labels: p.labels?.filter((l) => l !== label) ?? [] };
+      }
+      return p;
+    });
+
+    this.savePhotos(updated);
+  }
+
+  selectTag(tag: string) {
+    this.selectedTag.update((current) => (current === tag ? null : tag));
   }
 }

@@ -6,6 +6,25 @@
   </ion-row>
   <ion-row>
     <p>{{ captureDate() }}</p>
+  </ion-row>
+  <ion-row>
+    <div>
+      @for (label of photo().labels; track label) {
+        <ion-chip (click)="removeLabel(label)">
+          <ion-label>{{ label }}</ion-label>
+          <ion-icon name="close-circle"></ion-icon>
+        </ion-chip>
+      }
+    </div>
+  </ion-row>
+  <ion-row>
+    <p>
+      <ion-input
+        [placeholder]="content().addLabel"
+        (keyup.enter)="addLabel($event)"
+        enterkeyhint="done"
+      ></ion-input>
+    </p>
     <ion-textarea [(ngModel)]="notes" [placeholder]="content().enterNote" rows="3"></ion-textarea>
     <div>
       <ion-button (click)="submitNote()">{{ content().saveNotes }}</ion-button>

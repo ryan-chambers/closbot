@@ -1,6 +1,30 @@
 <app-header></app-header>
 
 <ion-content [fullscreen]="true">
+  <div class="search-wrapper">
+    <ion-searchbar
+      [placeholder]="'Search by label'"
+      (ionInput)="onSearch($event)"
+      (ionClear)="onClearSearch()"
+      [value]="searchTerm()"
+    ></ion-searchbar>
+
+    @if (selectedTag(); as tag) {
+      <div class="active-filter">
+        <ion-chip (click)="onTagTap(tag)"
+          ><ion-label>{{ tag }} </ion-label><ion-icon name="close-circle"></ion-icon
+        ></ion-chip>
+      </div>
+    }
+
+    @if (matchingLabels().length) {
+      <div class="typeahead-list">
+        @for (label of matchingLabels(); track label) {
+          <button class="typeahead-item" (click)="onTagTap(label)">{{ label }}</button>
+        }
+      </div>
+    }
+  </div>
   <ion-grid>
     <ion-row>
       @for (photo of winePhotos(); track photo.filepath) {
@@ -17,7 +41,7 @@
           <p>{{ photo.wineDetails }}</p>
         </ion-col>
       }
-      @if (winePhotos().length === 0) {
+      @if (allPhotos().length === 0) {
         <ion-col size="12">
           <p>{{ content().noPhotos }}</p>
         </ion-col>

@@ -1,0 +1,43 @@
+:host {
+  .search-wrapper {
+    position: relative;
+  }
+
+  .typeahead-list {
+    margin: 0 16px;
+    border: 1px solid var(--ion-color-primary);
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .typeahead-item {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: none;
+    border: none;
+    color: var(--ion-text-color);
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--ion-color-primary);
+    }
+
+    &:active {
+      background: var(--ion-color-step-100);
+    }
+  }
+
+  .active-filter {
+    padding: 0 16px;
+
+    ion-chip {
+      --background: var(--ion-color-primary);
+      --color: var(--ion-color-primary-contrast);
+      cursor: pointer;
+    }
+  }
+}
