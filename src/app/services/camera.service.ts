@@ -29,7 +29,7 @@ export class CameraService {
 
   async takePhoto(source: CameraSource): Promise<Photo | undefined> {
     return await Camera.getPhoto({
-      resultType: CameraResultType.Uri,
+      resultType: source === CameraSource.Camera ? CameraResultType.DataUrl : CameraResultType.Uri,
       source,
       width: 512,
       quality: 60,
