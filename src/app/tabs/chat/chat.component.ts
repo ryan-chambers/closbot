@@ -10,7 +10,6 @@ import { DatePipe, NgClass } from '@angular/common';
 import { ContentService } from '@services/content.service';
 import { ErrorCode } from '@errors/error.codes';
 import { enChat, frChat } from './chat.component.content';
-import { CameraSource } from '@capacitor/camera';
 
 @Component({
   selector: 'app-chat',
@@ -94,7 +93,7 @@ export class ChatComponent {
     try {
       this.waiting.set(true);
 
-      const image = await this.cameraService.takePhotoAsBase64(CameraSource.Camera);
+      const image = await this.cameraService.takePhotoAsBase64();
       if (!image) {
         // user cancelled or no image returned
         return;

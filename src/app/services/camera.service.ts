@@ -11,9 +11,13 @@ export type CaptureResult = 'ok' | 'cancelled' | 'error';
 export class CameraService {
   private readonly contentService = inject(ContentService);
 
-  async takePhotoAsBase64(source: CameraSource): Promise<string | undefined> {
-    const photo = await this.takePhoto(source);
-
+  async takePhotoAsBase64(): Promise<string | undefined> {
+    const photo = await Camera.getPhoto({
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Camera,
+      quality: 100,
+      width: 512,
+    }).catch(this.handleGetPhotoError.bind(this));
     if (!photo) {
       return undefined;
     }
@@ -29,10 +33,9 @@ export class CameraService {
 
   async takePhoto(source: CameraSource): Promise<Photo | undefined> {
     return await Camera.getPhoto({
-      resultType: source === CameraSource.Camera ? CameraResultType.DataUrl : CameraResultType.Uri,
+      resultType: CameraResultType.Uri,
       source,
-      width: 512,
-      quality: 60,
+      quality: 90,
     }).catch(this.handleGetPhotoError.bind(this));
   }
 
