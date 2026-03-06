@@ -1,5 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
-import { IonContent, IonButton, IonTextarea } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonButton,
+  IonTextarea,
+  ActionSheetController,
+} from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { MarkdownComponent } from 'ngx-markdown';
 import { CameraService } from '@services/camera.service';
@@ -10,6 +15,7 @@ import { DatePipe, NgClass } from '@angular/common';
 import { ContentService } from '@services/content.service';
 import { ErrorCode } from '@errors/error.codes';
 import { enChat, frChat } from './chat.component.content';
+import { CameraSource } from '@capacitor/camera';
 
 @Component({
   selector: 'app-chat',
@@ -31,6 +37,7 @@ export class ChatComponent {
   private readonly cameraService = inject(CameraService);
   private readonly wineService = inject(WineService);
   private readonly contentService = inject(ContentService);
+  private readonly actionSheetCtrl = inject(ActionSheetController);
 
   currentMessage = '';
   waiting = signal(false);
@@ -81,19 +88,21 @@ export class ChatComponent {
    */
   async readMenu(): Promise<void> {
     this.consumeImage(
+      CameraSource.Camera,
       (image: string) => this.wineService.readWineMenu(image),
       ErrorCode.READ_MENU_FAILED,
     );
   }
 
   private async consumeImage(
+    source: CameraSource,
     consumer: (image: string) => Promise<string>,
     errorCode: ErrorCode,
   ): Promise<void> {
     try {
       this.waiting.set(true);
 
-      const image = await this.cameraService.takePhotoAsBase64();
+      const image = await this.cameraService.takePhotoAsBase64(source);
       if (!image) {
         // user cancelled or no image returned
         return;
@@ -116,14 +125,35 @@ export class ChatComponent {
     }
   }
 
+  private summarizeFromSource(source: CameraSource) {
+    this.consumeImage(
+      source,
+      (image: string) => this.wineService.summarizeWine(image),
+      ErrorCode.BOTTLE_SUMMARIZE_FAILED,
+    );
+  }
+
   /**
    * Take a picture of a bottle of wine, send it to the wine service to get more details about
    * it, then append the result to the chat as a system message.
    */
-  sumarizeBottle() {
-    this.consumeImage(
-      (image: string) => this.wineService.summarizeWine(image),
-      ErrorCode.BOTTLE_SUMMARIZE_FAILED,
-    );
+  async sumarizeBottle() {
+    const actionSheet = await this.actionSheetCtrl.create({
+      buttons: [
+        {
+          text: this.content().takePhoto,
+          handler: () => this.summarizeFromSource(CameraSource.Camera),
+        },
+        {
+          text: this.content().chooseFromLibrary,
+          handler: () => this.summarizeFromSource(CameraSource.Photos),
+        },
+        {
+          text: this.content().cancel,
+          role: 'cancel',
+        },
+      ],
+    });
+    await actionSheet.present();
   }
 }

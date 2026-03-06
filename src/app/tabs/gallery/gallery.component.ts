@@ -111,7 +111,6 @@ export class GalleryComponent {
 
   async onAddPhoto(): Promise<void> {
     const actionSheet = await this.actionSheetCtrl.create({
-      header: 'Add Photo',
       buttons: [
         {
           text: this.content().takePhoto,

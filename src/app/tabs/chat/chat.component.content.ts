@@ -7,6 +7,9 @@ export interface CChatComponent {
   noMessage: string;
   loading: string;
   userTitle: string;
+  takePhoto: string;
+  chooseFromLibrary: string;
+  cancel: string;
 }
 
 export const enChat: CChatComponent = {
@@ -18,6 +21,9 @@ export const enChat: CChatComponent = {
   noMessage: 'No messages yet.',
   loading: 'Loading...',
   userTitle: 'You',
+  takePhoto: 'Take Photo',
+  chooseFromLibrary: 'Choose From Library',
+  cancel: 'Cancel',
 };
 
 export const frChat: CChatComponent = {
@@ -29,4 +35,7 @@ export const frChat: CChatComponent = {
   noMessage: 'Pas encore de messages.',
   loading: 'Chargement...',
   userTitle: 'Vous',
+  takePhoto: 'Prendre une photo',
+  cancel: 'Annuler',
+  chooseFromLibrary: 'Choisir dans la bibliothèque',
 };
