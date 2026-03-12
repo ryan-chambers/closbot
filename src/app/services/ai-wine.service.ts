@@ -69,6 +69,10 @@ export class AiWineService implements WineServiceInterface {
     return await this.openAiService.summarizeWineMenu(menuWines.join('\n'), wineContexts);
   }
 
+  async readWineBottlePhoto(base64Image: string): Promise<WineBottleInfo | null> {
+    return await this.openAiService.readWineBottlePhoto(base64Image);
+  }
+
   @TrackResponse(ResponseContext.WINE_BOTTLE_SUMMARY)
   async describeWine(base64Image: string): Promise<string> {
     // 1. read bottle image

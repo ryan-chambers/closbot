@@ -17,14 +17,39 @@
       }
     </div>
   </ion-row>
+  @if (ocrSuggestions().length > 0) {
+    <ion-row>
+      <div class="suggestion-chips">
+        @for (suggestion of ocrSuggestions(); track suggestion) {
+          <ion-chip (click)="acceptSuggestion(suggestion)" class="suggestion">
+            <ion-label>{{ suggestion }}</ion-label>
+            <ion-icon
+              name="close-circle"
+              (click)="dismissSuggestion(suggestion); $event.stopPropagation()"
+            ></ion-icon>
+          </ion-chip>
+        }
+      </div>
+    </ion-row>
+  }
   <ion-row>
-    <p>
+    <div>
       <ion-input
         [placeholder]="content().addLabel"
         (keyup.enter)="addLabel($event)"
         enterkeyhint="done"
       ></ion-input>
-    </p>
+
+      <ion-button expand="block" fill="outline" (click)="autoDetectLabels()">
+        @if (ocrLoading()) {
+          <ion-spinner name="crescent"></ion-spinner>Analyzing
+        } @else {
+          <ion-icon name="scan" slot="start"></ion-icon>Auto-detect labels
+        }
+      </ion-button>
+    </div>
+  </ion-row>
+  <ion-row>
     <ion-textarea [(ngModel)]="notes" [placeholder]="content().enterNote" rows="3"></ion-textarea>
     <div>
       <ion-button (click)="submitNote()">{{ content().saveNotes }}</ion-button>

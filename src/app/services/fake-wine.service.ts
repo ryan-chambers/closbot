@@ -3,6 +3,7 @@ import { WineServiceInterface } from './wine.service';
 import { ResponseLogService } from './response-log.service';
 import { ResponseContext, TrackResponse } from './track-response.decorator';
 import { ContentService } from './content.service';
+import { WineBottleInfo } from '@models/wines.model';
 
 @Injectable({
   providedIn: 'root',
@@ -74,6 +75,19 @@ export class FakeWineService implements WineServiceInterface {
         resolve(
           `${this.contentService.language}: This is a great bottle. The producer is wonderful. The cru is top-notch. Etc.`,
         );
+      }, 1100);
+    });
+  }
+
+  @TrackResponse(ResponseContext.WINE_BOTTLE_SUMMARY)
+  async readWineBottlePhoto(_base64Image: string): Promise<WineBottleInfo | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          producer: 'Domaine Rollet',
+          appellation: 'Pernand-Verglesses',
+          vintage: '2023',
+        });
       }, 1100);
     });
   }

@@ -1,0 +1,14 @@
+:host {
+  .suggestion-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+
+    ion-chip.suggestion {
+      --background: transparent;
+      border: 1px dashed var(--ion-color-primary);
+      opacity: 0.85;
+    }
+  }
+}

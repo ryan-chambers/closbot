@@ -4,6 +4,7 @@ import {
   computed,
   inject,
   OnInit,
+  signal,
   Signal,
 } from '@angular/core';
 import {
@@ -16,6 +17,7 @@ import {
   IonChip,
   IonLabel,
   IonIcon,
+  IonSpinner,
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from '@components/header/header.component';
 import { GalleryService } from '@services/gallery.service';
@@ -28,12 +30,15 @@ import { ContentService } from '@services/content.service';
 import { enEditNote, frEditNote } from './edit-note.component.content';
 import { WinePhoto } from '@models/photo.model';
 import { addIcons } from 'ionicons';
-import { closeCircle } from 'ionicons/icons';
+import { closeCircle, scan } from 'ionicons/icons';
+import { OcrService } from '@services/ocr.service';
 
 @Component({
   selector: 'app-edit-note',
   templateUrl: 'edit-note.component.html',
+  styleUrl: 'edit-note.component.scss',
   imports: [
+    IonSpinner,
     IonIcon,
     IonLabel,
     FormsModule,
@@ -56,6 +61,7 @@ export class EditNoteComponent implements OnInit {
   private readonly wineService = inject(WineService);
   private readonly contentService = inject(ContentService);
   private readonly router = inject(Router);
+  private readonly ocrService = inject(OcrService);
 
   readonly SWIPE_THRESHOLD = 50;
 
@@ -72,6 +78,9 @@ export class EditNoteComponent implements OnInit {
   notesCreatedYet = false;
 
   private touchStartX = 0;
+
+  ocrLoading = signal<boolean>(false);
+  ocrSuggestions = signal<string[]>([]);
 
   content = this.contentService.registerComponentContent(
     enEditNote,
@@ -93,7 +102,7 @@ export class EditNoteComponent implements OnInit {
   });
 
   constructor() {
-    addIcons({ closeCircle });
+    addIcons({ closeCircle, scan });
   }
 
   async submitNote() {
@@ -153,5 +162,39 @@ export class EditNoteComponent implements OnInit {
 
   async removeLabel(label: string) {
     await this.galleryService.removeLabelFromPhoto(this.photo().id, label);
+  }
+
+  async autoDetectLabels() {
+    if (this.ocrLoading()) {
+      return;
+    }
+
+    this.ocrLoading.set(true);
+    this.ocrSuggestions.set([]);
+
+    const photoImage = await this.galleryService.getPhotoImageAsBase64(this.photo());
+    const labels = await this.ocrService.detectLabels(photoImage);
+
+    this.ocrLoading.set(false);
+
+    if (labels.length === 0) {
+      this.toastService.showToast('No labels detected.');
+      return;
+    }
+
+    this.ocrSuggestions.set(labels);
+  }
+
+  private removeSuggestion(suggestion: string) {
+    this.ocrSuggestions.set(this.ocrSuggestions().filter((l) => l !== suggestion));
+  }
+
+  dismissSuggestion(suggestion: string) {
+    this.removeSuggestion(suggestion);
+  }
+
+  acceptSuggestion(suggestion: string) {
+    this.galleryService.addLabelToPhoto(this.photo().id, suggestion);
+    this.removeSuggestion(suggestion);
   }
 }

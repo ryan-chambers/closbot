@@ -10,7 +10,7 @@ export class CbErrorHandler implements ErrorHandler {
   // any is type specified by angular interface
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handleError(error: any): void {
-    console.error('An error occurred:', error);
+    console.error('An error occurred:', error, error?.trace ?? 'no trace');
     let msg: string;
     if (typeof error === 'string') {
       msg = error;
