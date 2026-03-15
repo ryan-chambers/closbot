@@ -59,11 +59,15 @@ export class GalleryService {
 
   public async addNewToGallery(source: CameraSource): Promise<boolean> {
     console.log(`Adding photo to gallery`);
-    const capturedPhoto = await this.cameraService.takePhoto(source);
+    const capturedPhoto: Photo | undefined = await this.cameraService.takePhoto(source);
 
     if (!capturedPhoto) {
       return Promise.resolve(false);
     }
+
+    console.log(
+      `Captured photo at path ${capturedPhoto.path} and webPath ${capturedPhoto.webPath}`,
+    );
 
     // Save the picture and add it to gallery
     const id = String(Date.now());
@@ -151,6 +155,7 @@ export class GalleryService {
       // Display the photo by reading into base64 format
       for (const photo of winePhotos) {
         // Read each saved photo's data from the Filesystem
+        console.log(`Trying to read file at path ${photo.filepath}`);
         const readFile = await Filesystem.readFile({
           path: photo.filepath,
           directory: Directory.Data,
@@ -169,6 +174,7 @@ export class GalleryService {
   // Save picture to file on device
   private async savePicture(photo: Photo, id: string) {
     // Convert photo to base64 format, required by Filesystem API to save
+    console.log(`Trying to read photo at URL ${photo.path}`);
     const base64Data = await this.readAsBase64(photo);
 
     // Write the file to the data directory
@@ -199,6 +205,7 @@ export class GalleryService {
   private async readAsBase64(photo: Photo) {
     if (this.platform.is('hybrid')) {
       // Read the file into base64 format
+      console.log(`Trying to read base 64 file at path ${photo.path}`);
       const file = await Filesystem.readFile({
         path: photo.path!,
       });
@@ -211,6 +218,27 @@ export class GalleryService {
 
       return (await this.convertBlobToBase64(blob)) as string;
     }
+  }
+
+  async getPhotoImageAsBase64(photo: WinePhoto): Promise<string> {
+    let path = photo.filepath;
+    if (this.platform.is('hybrid')) {
+      // Extract just the filename, removing the file:// protocol and directory path
+      path =
+        photo.filepath
+          .replace(/^file:\/\//, '')
+          .split('/')
+          .pop() ?? photo.filepath;
+      console.log(`Running on hybrid, adjusted path: ${path}`);
+    }
+
+    const photoFile = await Filesystem.readFile({
+      path,
+      directory: Directory.Data,
+    });
+
+    // TODO need to test this on browser once it is working again
+    return `data:image/jpeg;base64,${photoFile.data as string}`;
   }
 
   private convertBlobToBase64 = (blob: Blob) =>

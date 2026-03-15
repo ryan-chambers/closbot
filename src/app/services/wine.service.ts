@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { AiWineService } from './ai-wine.service';
 import { FakeWineService } from './fake-wine.service';
 import { ConfigService } from './config.service';
+import { WineBottleInfo } from '@models/wines.model';
 
 export interface WineServiceInterface {
   initSession(): void;
@@ -18,6 +19,8 @@ export interface WineServiceInterface {
    * if the response was hallucinated it can be later investigated.
    */
   flagResponse(): Promise<void>;
+
+  readWineBottlePhoto(base64Image: string): Promise<WineBottleInfo | null>;
 }
 
 @Injectable({
@@ -55,5 +58,9 @@ export class WineService {
 
   summarizeWine(base64Image: string): Promise<string> {
     return this.getService().describeWine(base64Image);
+  }
+
+  readWineBottlePhoto(base64Image: string): Promise<WineBottleInfo | null> {
+    return this.getService().readWineBottlePhoto(base64Image);
   }
 }

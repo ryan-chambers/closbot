@@ -9,8 +9,6 @@
     - OpenAI dropped model price for o-3
     - could use different models for different use cases
     - Try OpenAi 5.2 for reading menu
-- enhancement: add pagination (or thumbnails?) to gallery?
-    - or cap at last, say, 10 wines... but then delete older ones that can't be viewed
 - mode: wine map, using leaflet
 - expose K for optimal results?
 - feature: stream responses on screen like how OpenAI works
