@@ -1,4 +1,5 @@
-embeddings query: Domaine Rollin Père et Fils Bourgogne Hautes-Côtes de Beaune2021
+todo:
+X embeddings query: Domaine Rollin Père et Fils Bourgogne Hautes-Côtes de Beaune2021
 - see chatlog.md for weird response : why was Clive Coates referred to?
 - where is the rest of the context? Other Context: Domaine Rollin (Source: Clive Coates Favourite Burgundies) 
 
