@@ -18,7 +18,6 @@ export class OpenAiService {
   private readonly promptService = inject(PromptService);
 
   readonly embeddingModel = 'text-embedding-3-large';
-  readonly chatModel = 'gpt-4o';
 
   previousResponseId: string | null = null;
 
