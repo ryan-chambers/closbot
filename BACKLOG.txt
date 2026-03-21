@@ -1,3 +1,12 @@
+embeddings query: Domaine Rollin Père et Fils Bourgogne Hautes-Côtes de Beaune2021
+- see chatlog.md for weird response : why was Clive Coates referred to?
+- where is the rest of the context? Other Context: Domaine Rollin (Source: Clive Coates Favourite Burgundies) 
+
+due to bad data?
+
+"chunk": "Domaine Rollin",
+"source": "Clive Coates Favourite Burgundies"
+
 - RAG is returning similar bottle (village white vs. town red) in search results, is there any way to fix that?
     - work-around is to mention that in the chat and ask for clarification
 - continue testing menu recommendations for false positives, finding actual RAG results
