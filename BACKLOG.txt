@@ -1,3 +1,5 @@
+- LLM seems smart enough to handle it, but maybe for some replies, (eg. yes please after a question from LLM response), I should filter out low-score RAG results; eg. < 0.50. I should also skip RAG queries for short entries from user after the first chat, this should cover short replies.
+
 - RAG is returning similar bottle (village white vs. town red) in search results, is there any way to fix that?
     - work-around is to mention that in the chat and ask for clarification
 - continue testing menu recommendations for false positives, finding actual RAG results
