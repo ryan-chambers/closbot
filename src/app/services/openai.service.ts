@@ -85,28 +85,7 @@ export class OpenAiService {
   }
 
   private async invokeWithImage(base64Image: string, prompt: string): Promise<string> {
-    // const response = await this.openAiClient.chat.completions.create({
-    //   model: 'gpt-4o',
-    //   messages: [
-    //     {
-    //       role: 'user',
-    //       content: [
-    //         {
-    //           type: 'image_url',
-    //           image_url: {
-    //             url: base64Image,
-    //           },
-    //         },
-    //         {
-    //           type: 'text',
-    //           text: prompt,
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // });
-
-    const r2 = await this.openAiClient.responses.create({
+    const response = await this.openAiClient.responses.create({
       model: 'gpt-4o',
       input: [
         {
@@ -126,11 +105,9 @@ export class OpenAiService {
       ],
     });
 
-    // console.log(`Result from reading image:`, response.choices[0].message.content);
-    console.log(`Wine menu summary response: ${r2.output_text}`);
+    console.log(`Wine menu summary response: ${response.output_text}`);
 
-    // return response.choices[0].message.content ?? '';
-    return r2.output_text;
+    return response.output_text;
   }
 
   @TrackResponse(ResponseContext.WINE_BOTTLE_IMAGE_DETAILS)
