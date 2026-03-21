@@ -51,7 +51,7 @@ export class OpenAiService {
 
     console.log(`Instructions: ${instructions}`);
     const response = await this.openAiClient.responses.create({
-      model: 'gpt-4o',
+      model: 'gpt-5.4-mini',
       input: userMessage,
       instructions,
       previous_response_id: this.previousResponseId,

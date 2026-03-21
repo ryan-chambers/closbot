@@ -13,7 +13,9 @@ X where is the rest of the context? Other Context: Domaine Rollin (Source: Clive
     - compare different models and their price
     - OpenAI dropped model price for o-3
     - could use different models for different use cases:
-        - chat (try 5.4)
+        - chat
+            - 5.4 - much better, but fairly slow
+            - gpt-5.4-mini better response; much much faster than regular 5.4
         - invokeWithImage (readWineBottlePhoto to parse (model is good), readWineMenuPhoto(model is pretty good, but maybe could try a better wine))
         - summarizeWineMenu (try 5.4)
     - Try OpenAi 5.4 for reading menu, asking about a bottle
