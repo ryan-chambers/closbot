@@ -70,6 +70,7 @@ export class OpenAiService {
     const responseContent = await this.invokeWithImage(
       base64Image,
       this.promptService.parseWineMenuPrompt(),
+      true,
     );
 
     const lines = responseContent
@@ -84,9 +85,13 @@ export class OpenAiService {
     return lines;
   }
 
-  private async invokeWithImage(base64Image: string, prompt: string): Promise<string> {
+  private async invokeWithImage(
+    base64Image: string,
+    prompt: string,
+    useHighResolution: boolean,
+  ): Promise<string> {
     const response = await this.openAiClient.responses.create({
-      model: 'gpt-4o',
+      model: useHighResolution ? 'gpt-5.4-mini' : 'gpt-5.4-nano',
       input: [
         {
           role: 'user',
@@ -94,7 +99,7 @@ export class OpenAiService {
             {
               type: 'input_image',
               image_url: base64Image,
-              detail: 'auto',
+              detail: useHighResolution ? 'high' : 'auto',
             },
             {
               type: 'input_text',
@@ -115,6 +120,7 @@ export class OpenAiService {
     const responseText = await this.invokeWithImage(
       base64Image,
       this.promptService.readWineBottlePrompt(),
+      false,
     );
     return this.parseWineBottleInfo(responseText);
   }
