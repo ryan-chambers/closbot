@@ -1,10 +1,6 @@
-- LLM seems smart enough to handle it, but maybe for some replies, (eg. yes please after a question from LLM response), I should filter out low-score RAG results; eg. < 0.50. I should also skip RAG queries for short entries from user after the first chat, this should cover short replies.
-- if RAG query fails (eg. when there are a lot reading a menu), I should ignore the failures and proceed with successes
-
 - RAG is returning similar bottle (village white vs. town red) in search results, is there any way to fix that?
     - work-around is to mention that in the chat and ask for clarification
 - continue testing menu recommendations for false positives, finding actual RAG results
-    - should wine menu summary be part of existing conversation?
 - GalleryService.deletePhoto: don't save if Filesystem.deleteFile fails
 - decide LLM model
     - using OpenAI for now, since that is API I have access to already
@@ -32,3 +28,6 @@ DONE
 - incorporate reading the wine menu more organically into the chat. It will give a recommendation before I can put in the menu
     - feature: take a picture of a bottle and get info on it
 - refactor package names, components, tabs
+- should wine menu summary be part of existing conversation?
+    - Nah, to keep things simple let's keep it separate
+    - But what if there are follow up questions? I should test this

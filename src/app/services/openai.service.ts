@@ -128,7 +128,6 @@ export class OpenAiService {
   async summarizeWineMenu(menu: string, context: WineContext[]): Promise<string> {
     const instructions = this.promptService.createMenuSummarySystemPrompt(context);
 
-    // TODO Determine if it makes sense to continue with existing conversation
     const response = await this.openAiClient.responses.create({
       model: 'gpt-5.4-mini',
       input: menu,
