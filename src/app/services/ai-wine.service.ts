@@ -125,7 +125,7 @@ export class AiWineService implements WineServiceInterface {
       result += ` ${info.appellation}`;
     }
     if (info.vintage) {
-      result += `${info.vintage}`;
+      result += ` ${info.vintage}`;
     }
     return result;
   }

@@ -1,16 +1,8 @@
 - RAG is returning similar bottle (village white vs. town red) in search results, is there any way to fix that?
     - work-around is to mention that in the chat and ask for clarification
 - continue testing menu recommendations for false positives, finding actual RAG results
-    - should wine menu summary be part of existing conversation?
 - GalleryService.deletePhoto: don't save if Filesystem.deleteFile fails
-- decide LLM model
-    - using OpenAI for now, since that is API I have access to already
-    - compare different models and their price
-    - OpenAI dropped model price for o-3
-    - could use different models for different use cases
-    - Try OpenAi 5.2 for reading menu
 - mode: wine map, using leaflet
-- expose K for optimal results?
 - feature: stream responses on screen like how OpenAI works
 - figure out why angular-cli is broken. Due to ionic somehow
 - add more eslint, and remove typescript lint
@@ -24,3 +16,18 @@ DONE
 - incorporate reading the wine menu more organically into the chat. It will give a recommendation before I can put in the menu
     - feature: take a picture of a bottle and get info on it
 - refactor package names, components, tabs
+- should wine menu summary be part of existing conversation?
+    - Nah, to keep things simple let's keep it separate
+    - But what if there are follow up questions? I should test this
+- decide LLM model
+    - using OpenAI for now, since that is API I have access to already
+    - compare different models and their price
+    - OpenAI dropped model price for o-3
+    - could use different models for different use cases:
+        X chat
+            - 5.4 - much better, but fairly slow
+            - gpt-5.4-mini better response; much much faster than regular 5.4
+        - invokeWithImage (readWineBottlePhoto to parse (model is good), readWineMenuPhoto(model is pretty good, but maybe could try a better wine))
+        - summarizeWineMenu (try 5.4)
+    - Try OpenAi 5.4 for reading menu, asking about a bottle
+- expose K for optimal results?

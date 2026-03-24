@@ -18,7 +18,6 @@ export class OpenAiService {
   private readonly promptService = inject(PromptService);
 
   readonly embeddingModel = 'text-embedding-3-large';
-  readonly chatModel = 'gpt-4o';
 
   previousResponseId: string | null = null;
 
@@ -52,13 +51,14 @@ export class OpenAiService {
 
     console.log(`Instructions: ${instructions}`);
     const response = await this.openAiClient.responses.create({
-      model: 'gpt-4o',
+      model: 'gpt-5.4-mini',
       input: userMessage,
       instructions,
       previous_response_id: this.previousResponseId,
     });
 
     this.previousResponseId = response.id;
+
     return this.parseResponse(response.output_text);
   }
 
@@ -71,6 +71,7 @@ export class OpenAiService {
     const responseContent = await this.invokeWithImage(
       base64Image,
       this.promptService.parseWineMenuPrompt(),
+      true,
     );
 
     const lines = responseContent
@@ -85,21 +86,24 @@ export class OpenAiService {
     return lines;
   }
 
-  private async invokeWithImage(base64Image: string, prompt: string): Promise<string> {
-    const response = await this.openAiClient.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
+  private async invokeWithImage(
+    base64Image: string,
+    prompt: string,
+    useHighResolution: boolean,
+  ): Promise<string> {
+    const response = await this.openAiClient.responses.create({
+      model: useHighResolution ? 'gpt-5.4-mini' : 'gpt-5.4-nano',
+      input: [
         {
           role: 'user',
           content: [
             {
-              type: 'image_url',
-              image_url: {
-                url: base64Image,
-              },
+              type: 'input_image',
+              image_url: base64Image,
+              detail: useHighResolution ? 'high' : 'auto',
             },
             {
-              type: 'text',
+              type: 'input_text',
               text: prompt,
             },
           ],
@@ -107,9 +111,9 @@ export class OpenAiService {
       ],
     });
 
-    console.log(`Result from reading image:`, response.choices[0].message.content);
+    console.log(`Wine menu summary response: ${response.output_text}`);
 
-    return response.choices[0].message.content ?? '';
+    return response.output_text;
   }
 
   @TrackResponse(ResponseContext.WINE_BOTTLE_IMAGE_DETAILS)
@@ -117,6 +121,7 @@ export class OpenAiService {
     const responseText = await this.invokeWithImage(
       base64Image,
       this.promptService.readWineBottlePrompt(),
+      false,
     );
     return this.parseWineBottleInfo(responseText);
   }
@@ -124,14 +129,15 @@ export class OpenAiService {
   async summarizeWineMenu(menu: string, context: WineContext[]): Promise<string> {
     const instructions = this.promptService.createMenuSummarySystemPrompt(context);
 
-    // TODO Determine if it makes sense to continue with existing conversation
     const response = await this.openAiClient.responses.create({
-      model: 'gpt-4o',
+      model: 'gpt-5.4-mini',
       input: menu,
       instructions,
     });
 
     console.log(`Wine menu summary response: ${response.output_text}`);
+
+    this.previousResponseId = response.id;
 
     return this.parseResponse(response.output_text);
   }
