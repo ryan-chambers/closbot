@@ -124,7 +124,7 @@ export class OpenAiService {
 
     // TODO Determine if it makes sense to continue with existing conversation
     const response = await this.openAiClient.responses.create({
-      model: 'gpt-4o',
+      model: 'gpt-5.4-mini',
       input: menu,
       instructions,
     });

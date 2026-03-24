@@ -1,4 +1,6 @@
 - LLM seems smart enough to handle it, but maybe for some replies, (eg. yes please after a question from LLM response), I should filter out low-score RAG results; eg. < 0.50. I should also skip RAG queries for short entries from user after the first chat, this should cover short replies.
+- if RAG query fails (eg. when there are a lot reading a menu), I should ignore the failures and proceed with successes
+- for larger menus, image-to-text has tons of hallucinations
 
 - RAG is returning similar bottle (village white vs. town red) in search results, is there any way to fix that?
     - work-around is to mention that in the chat and ask for clarification
