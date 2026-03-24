@@ -59,8 +59,6 @@ export class OpenAiService {
 
     this.previousResponseId = response.id;
 
-    console.log(`Captured response id: ${response.id}`);
-
     return this.parseResponse(response.output_text);
   }
 
