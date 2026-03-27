@@ -81,19 +81,6 @@ export class ChatComponent {
     this.chatService.flagChat();
   }
 
-  /**
-   * Take a photo of a wine menu, send it to the wine service for
-   * parsing/recommendation, and append the result to the chat as a
-   * system message.
-   */
-  async readMenu(): Promise<void> {
-    this.consumeImage(
-      CameraSource.Camera,
-      (image: string) => this.wineService.readWineMenu(image),
-      ErrorCode.READ_MENU_FAILED,
-    );
-  }
-
   private async consumeImage(
     source: CameraSource,
     // The consumer will take the image from source and do something with it
@@ -140,6 +127,21 @@ export class ChatComponent {
    */
   async summarizeBottle() {
     this.createAndPresentActionSheet((source) => this.summarizeBottleFromSource(source));
+  }
+
+  /**
+   * Take a photo of a wine menu, send it to the wine service for
+   * parsing/recommendation, and append the result to the chat as a
+   * system message.
+   */
+  async readMenu(): Promise<void> {
+    this.createAndPresentActionSheet((source) =>
+      this.consumeImage(
+        source,
+        (image: string) => this.wineService.readWineMenu(image),
+        ErrorCode.READ_MENU_FAILED,
+      ),
+    );
   }
 
   async createAndPresentActionSheet(handler: (source: CameraSource) => void) {
