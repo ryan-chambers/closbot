@@ -4,6 +4,7 @@ import { ResponseLogService } from './response-log.service';
 import { ResponseContext, TrackResponse } from './track-response.decorator';
 import { ContentService } from './content.service';
 import { WineBottleInfo } from '@models/wines.model';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +12,7 @@ import { WineBottleInfo } from '@models/wines.model';
 export class FakeWineService implements WineServiceInterface {
   private readonly responseLogService = inject(ResponseLogService);
   private readonly contentService = inject(ContentService);
+  private readonly configService = inject(ConfigService);
 
   async flagResponse(): Promise<void> {
     this.responseLogService.recordResponseLogs();
@@ -23,7 +25,7 @@ export class FakeWineService implements WineServiceInterface {
   @TrackResponse(ResponseContext.CHAT_RESPONSE)
   async invokeChat(_: string): Promise<string> {
     console.log('FakeWineService invoked');
-    const responseValue = `${this.contentService.language}: ${this.longResponse}`;
+    const responseValue = `${this.contentService.language}:  ${this.configService.isBurgundyFocused() ? this.longResponse : 'This is a non-burgundy chat'}`;
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(responseValue);
@@ -63,8 +65,10 @@ export class FakeWineService implements WineServiceInterface {
   async readWineMenu(_base64Image: string): Promise<string> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(`${this.contentService.language}: ${this.longResponse}`);
-      }, 3000);
+        resolve(
+          `${this.contentService.language}: ${this.configService.isBurgundyFocused() ? this.longResponse : 'This is a non-burgundy menu'}`,
+        );
+      }, 1000);
     });
   }
 
@@ -83,11 +87,15 @@ export class FakeWineService implements WineServiceInterface {
   async readWineBottlePhoto(_base64Image: string): Promise<WineBottleInfo | null> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve({
-          producer: 'Domaine Rollet',
-          appellation: 'Pernand-Verglesses',
-          vintage: '2023',
-        });
+        resolve(
+          this.configService.isBurgundyFocused()
+            ? {
+                producer: 'Domaine Rollet',
+                appellation: 'Pernand-Verglesses',
+                vintage: '2023',
+              }
+            : { producer: 'Francois Chidaine', appellation: 'Touraine', vintage: '2014' },
+        );
       }, 1100);
     });
   }

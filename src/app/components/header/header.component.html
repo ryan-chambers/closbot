@@ -2,14 +2,28 @@
   <ion-row>
     <ion-toolbar>
       <ion-buttons slot="end">
-        <ion-icon src="/assets/icon/config.svg"></ion-icon>
-
-        <ion-toggle
-          [checked]="configService.isUsingRealServices()"
-          (ionChange)="toggleRealServices($event)"
-        >
-          &nbsp;{{ content().useRealServices }} &nbsp;</ion-toggle
-        >
+        <ion-item>
+          <ion-label (click)="toggleRealServices()" [aria-label]="content().useRealServices"
+            ><ion-icon name="hammer" color="primary"></ion-icon
+          ></ion-label>
+          &nbsp;
+          <ion-toggle
+            [checked]="configService.isUsingRealServices()"
+            (ionChange)="toggleRealServices()"
+          >
+          </ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label (click)="toggleBurgundyFocus()" [aria-label]="content().burgundyFocus"
+            ><ion-icon name="earth" color="primary"></ion-icon
+          ></ion-label>
+          &nbsp;
+          <ion-toggle
+            [checked]="!configService.isBurgundyFocused()"
+            (ionChange)="toggleBurgundyFocus()"
+          >
+          </ion-toggle>
+        </ion-item>
         &nbsp;
         <ion-item>EN &nbsp;<ion-toggle (click)="toggleLang()"></ion-toggle> &nbsp; FR</ion-item>
         <ion-button (click)="chatService.flagChat()" [disabled]="!chatService.enableFlagButton()">

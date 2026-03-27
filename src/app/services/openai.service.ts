@@ -46,7 +46,7 @@ export class OpenAiService {
       });
   }
 
-  async invokeChat(userMessage: string, context: WineContext): Promise<string> {
+  async invokeChat(userMessage: string, context: WineContext | undefined): Promise<string> {
     const instructions = this.promptService.createChatSystemPrompt(context);
 
     console.log(`Instructions: ${instructions}`);
@@ -173,7 +173,7 @@ export class OpenAiService {
 
   async describeWine(
     wineDetails: string,
-    context: WineContext,
+    context: WineContext | undefined,
     vintageInfo: string | undefined,
   ): Promise<string> {
     return this.invokeChat(

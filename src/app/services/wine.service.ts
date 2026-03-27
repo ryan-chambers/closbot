@@ -20,6 +20,9 @@ export interface WineServiceInterface {
    */
   flagResponse(): Promise<void>;
 
+  /**
+   * Given an image of a wine bottle, try to return basic info about the wine.
+   */
   readWineBottlePhoto(base64Image: string): Promise<WineBottleInfo | null>;
 }
 

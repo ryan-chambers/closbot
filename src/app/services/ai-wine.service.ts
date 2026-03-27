@@ -8,6 +8,7 @@ import { WineBottleInfo, WineContext } from '@models/wines.model';
 import { VintagesService } from './vintages.service';
 import { ContentService } from './content.service';
 import { ErrorCode } from '@errors/error.codes';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +19,7 @@ export class AiWineService implements WineServiceInterface {
   private readonly responseLogService = inject(ResponseLogService);
   private readonly vintagesService = inject(VintagesService);
   private readonly contentService = inject(ContentService);
+  private readonly configService = inject(ConfigService);
 
   content = this.contentService.registerComponentContent(
     {
@@ -33,7 +35,11 @@ export class AiWineService implements WineServiceInterface {
 
   @TrackResponse(ResponseContext.CHAT_RESPONSE)
   async invokeChat(userMessage: string): Promise<string> {
-    const wineContext = await this.pineconeService.getContextForQuery(userMessage);
+    let wineContext = undefined;
+
+    if (this.configService.isBurgundyFocused()) {
+      wineContext = await this.pineconeService.getContextForQuery(userMessage);
+    }
 
     console.log('Wine context:', wineContext);
 
@@ -45,25 +51,37 @@ export class AiWineService implements WineServiceInterface {
   }
 
   async addWineNote(note: string) {
-    this.pineconeService.upsertWineNote(note);
+    if (this.configService.isBurgundyFocused()) {
+      this.pineconeService.upsertWineNote(note);
+    } else {
+      console.log('Not adding wine note since not in Burgundy focus mode:');
+    }
   }
 
   @TrackResponse(ResponseContext.WINE_MENU_RECOMMENDATION)
   async readWineMenu(base64Image: string): Promise<string> {
     // 1. read menu image
     const menuWines = await this.openAiService.readWineMenuPhoto(base64Image);
+    // const menuWines = [
+    //   '2014 Francois Chidane Rose',
+    //   '2020 Chateau Haut-Bailly',
+    //   '2016 Chateau Beaucastel Chateauneuf du Pape',
+    // ];
 
     if (menuWines.length === 0) {
       return this.contentService.translateError(ErrorCode.NO_WINES_FROM_MENU_PHOTO);
     }
 
-    // 2. get embeddings for each wine
-    const menuWineEmbeddings = await this.openAiService.embedVectors(menuWines);
+    let wineContexts: WineContext[] = [];
+    if (this.configService.isBurgundyFocused()) {
+      // 2. get embeddings for each wine
+      const menuWineEmbeddings = await this.openAiService.embedVectors(menuWines);
 
-    // 3. Get context for each wine embedding
-    const wineContexts: WineContext[] = await Promise.all(
-      menuWineEmbeddings.map((embedding) => this.pineconeService.getContextForQuery(embedding)),
-    );
+      // 3. Get context for each wine embedding
+      wineContexts = await Promise.all(
+        menuWineEmbeddings.map((embedding) => this.pineconeService.getContextForQuery(embedding)),
+      );
+    }
 
     // 4. summarize wine menu
     return await this.openAiService.summarizeWineMenu(menuWines.join('\n'), wineContexts);
@@ -77,18 +95,29 @@ export class AiWineService implements WineServiceInterface {
   async describeWine(base64Image: string): Promise<string> {
     // 1. read bottle image
     const wineBottleInfo = await this.openAiService.readWineBottlePhoto(base64Image);
+    // const wineBottleInfo = {
+    //   producer: 'Domaine Rollet',
+    //   appellation: 'Pernand-Verglesses',
+    //   vintage: '2023',
+    // };
     if (!wineBottleInfo) {
       return this.contentService.translateError(ErrorCode.COULD_NOT_READ_BOTTLE_DETAILS);
     }
 
     const wineBottleString: string = this.formatWineBottlInfo(wineBottleInfo);
-    // 2. get embedding for the bottle
-    const embedding = await this.openAiService.embedVector(wineBottleString);
-    // 3. get context for the bottle embedding
-    const context = await this.pineconeService.getContextForQuery(embedding);
+
+    let context: WineContext | undefined = undefined;
+    let vintageInfo: string | undefined = undefined;
+    if (this.configService.isBurgundyFocused()) {
+      // 2. get embedding for the bottle
+      const embedding = await this.openAiService.embedVector(wineBottleString);
+      // 3. get context for the bottle embedding
+      context = await this.pineconeService.getContextForQuery(embedding);
+
+      vintageInfo = this.vintageInfo(wineBottleInfo.vintage);
+    }
 
     // 4. summarize wine bottle
-    const vintageInfo: string | undefined = this.vintageInfo(wineBottleInfo.vintage);
     return await this.openAiService.describeWine(wineBottleString, context, vintageInfo);
   }
 
