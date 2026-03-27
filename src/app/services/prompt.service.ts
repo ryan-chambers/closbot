@@ -1,22 +1,32 @@
-import { inject, Injectable, Signal } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { ContentService } from './content.service';
 import { RagQueryResult, WineContext } from '@models/wines.model';
 import { enPromptContent, frPromptContent, CPromptService } from '@models/prompt-content.model';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PromptService {
   private readonly contentService = inject(ContentService);
+  private readonly configService = inject(ConfigService);
+
   content: Signal<CPromptService> = this.contentService.registerComponentContent(
     enPromptContent,
     frPromptContent,
     'PromptService',
   );
 
+  fromWhereContent = computed(() =>
+    this.configService.isBurgundyFocused() ? this.content().fromBurgundy : '',
+  );
+
   describeWinePrompt(wineDetails: string, vintageInfo: string | undefined): string {
     const describeContent = this.content().describeWineBottle;
-    let prompt = `${describeContent.promptBase} ${wineDetails}`;
+    const promptBase = this.contentService.interpolateArgs(describeContent.promptBase, {
+      fromWhere: this.fromWhereContent(),
+    });
+    let prompt = `${promptBase} ${wineDetails}`;
     if (vintageInfo) {
       prompt += this.contentService.interpolateArgs(describeContent.vintageInfo, {
         vintageInfo,
@@ -28,7 +38,7 @@ export class PromptService {
   readWineBottlePrompt(): string {
     // This prompt does not need to be translated since the response is only used as input for other operations.
     return `
-Here is a picture of a bottle of wine from Burgundy. Please tell me the producer, vintage, appellation. You MUST NOT provide any additional details or commentary. You MUST return the information in plain text format, without any formatting. Return N/A for any information is not known.
+Here is a picture of a bottle of wine. Please tell me the producer, vintage, appellation. You MUST NOT provide any additional details or commentary. You MUST return the information in plain text format, without any formatting. Return N/A for any information is not known.
 Return the information in the following format:
 <format>
 Vintage: <vintage>, or N/A if not known
@@ -38,17 +48,19 @@ Grape Variety: <grape variety>
 <format>`;
   }
 
-  createChatSystemPrompt(wineContext: WineContext): string {
+  createChatSystemPrompt(wineContext: WineContext | undefined): string {
     const chatContent = this.content().chat;
-    let prompt = chatContent.systemPrompt;
-    if (wineContext.otherContext.length > 0) {
+    let prompt = this.contentService.interpolateArgs(chatContent.systemPrompt, {
+      fromWhere: this.fromWhereContent(),
+    });
+    if ((wineContext?.otherContext ?? []).length > 0) {
       prompt += this.contentService.interpolateArgs(chatContent.additionalNotes, {
-        otherContext: this.combineQueryResults(wineContext.otherContext),
+        otherContext: this.combineQueryResults(wineContext!.otherContext),
       });
     }
-    if (wineContext.personalNotes.length > 0) {
+    if ((wineContext?.personalNotes ?? []).length > 0) {
       prompt += this.contentService.interpolateArgs(chatContent.myNotes, {
-        personalNotes: this.combineQueryResults(wineContext.personalNotes),
+        personalNotes: this.combineQueryResults(wineContext!.personalNotes),
       });
     }
     return prompt;
@@ -66,7 +78,9 @@ Grape Variety: <grape variety>
 
   createMenuSummarySystemPrompt(wineContexts: WineContext[]): string {
     const promptContent = this.content().menuSummary;
-    let prompt = promptContent.systemPrompt;
+    let prompt = this.contentService.interpolateArgs(promptContent.systemPrompt, {
+      fromWhere: this.fromWhereContent(),
+    });
     const allPersonalNotes = wineContexts.flatMap((ctx) => ctx.personalNotes);
     if (allPersonalNotes.length > 0) {
       prompt += this.contentService.interpolateArgs(promptContent.personalNotes, {

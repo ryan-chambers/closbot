@@ -2,7 +2,6 @@
     - work-around is to mention that in the chat and ask for clarification
 - continue testing menu recommendations for false positives, finding actual RAG results
 - GalleryService.deletePhoto: don't save if Filesystem.deleteFile fails
-- mode: wine map, using leaflet
 - feature: stream responses on screen like how OpenAI works
 - figure out why angular-cli is broken. Due to ionic somehow
 - add more eslint, and remove typescript lint

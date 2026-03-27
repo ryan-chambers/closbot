@@ -96,6 +96,7 @@ export class ChatComponent {
 
   private async consumeImage(
     source: CameraSource,
+    // The consumer will take the image from source and do something with it
     consumer: (image: string) => Promise<string>,
     errorCode: ErrorCode,
   ): Promise<void> {
@@ -125,7 +126,7 @@ export class ChatComponent {
     }
   }
 
-  private summarizeFromSource(source: CameraSource) {
+  private summarizeBottleFromSource(source: CameraSource) {
     this.consumeImage(
       source,
       (image: string) => this.wineService.summarizeWine(image),
@@ -142,11 +143,11 @@ export class ChatComponent {
       buttons: [
         {
           text: this.content().takePhoto,
-          handler: () => this.summarizeFromSource(CameraSource.Camera),
+          handler: () => this.summarizeBottleFromSource(CameraSource.Camera),
         },
         {
           text: this.content().chooseFromLibrary,
-          handler: () => this.summarizeFromSource(CameraSource.Photos),
+          handler: () => this.summarizeBottleFromSource(CameraSource.Photos),
         },
         {
           text: this.content().cancel,

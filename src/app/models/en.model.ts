@@ -4,9 +4,6 @@ export const enAppContent: CAppContent = {
   responseLogService: {
     logRecorded: 'Response log recorded',
   },
-  headerComponent: {
-    useRealServices: 'Real services?',
-  },
   vintageReportComponent: {
     vintageReport: 'Vintage Report',
     regionalGuidelines: 'Regional Guidelines',

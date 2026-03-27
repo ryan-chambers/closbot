@@ -14,16 +14,11 @@ export interface CVintageReportComponent {
   notes: string;
 }
 
-export interface CHeaderComponent {
-  useRealServices: string;
-}
-
 export interface CResponseLogService {
   logRecorded: string;
 }
 
 export interface CAppContent {
   vintageReportComponent: CVintageReportComponent;
-  headerComponent: CHeaderComponent;
   responseLogService: CResponseLogService;
 }
