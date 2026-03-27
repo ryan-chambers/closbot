@@ -139,15 +139,19 @@ export class ChatComponent {
    * it, then append the result to the chat as a system message.
    */
   async summarizeBottle() {
+    this.createAndPresentActionSheet((source) => this.summarizeBottleFromSource(source));
+  }
+
+  async createAndPresentActionSheet(handler: (source: CameraSource) => void) {
     const actionSheet = await this.actionSheetCtrl.create({
       buttons: [
         {
           text: this.content().takePhoto,
-          handler: () => this.summarizeBottleFromSource(CameraSource.Camera),
+          handler: () => handler(CameraSource.Camera),
         },
         {
           text: this.content().chooseFromLibrary,
-          handler: () => this.summarizeBottleFromSource(CameraSource.Photos),
+          handler: () => handler(CameraSource.Photos),
         },
         {
           text: this.content().cancel,
