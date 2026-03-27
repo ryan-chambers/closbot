@@ -138,7 +138,7 @@ export class ChatComponent {
    * Take a picture of a bottle of wine, send it to the wine service to get more details about
    * it, then append the result to the chat as a system message.
    */
-  async sumarizeBottle() {
+  async summarizeBottle() {
     const actionSheet = await this.actionSheetCtrl.create({
       buttons: [
         {
