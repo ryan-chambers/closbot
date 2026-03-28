@@ -113,20 +113,18 @@ export class ChatComponent {
     }
   }
 
-  private summarizeBottleFromSource(source: CameraSource) {
-    this.consumeImage(
-      source,
-      (image: string) => this.wineService.summarizeWine(image),
-      ErrorCode.BOTTLE_SUMMARIZE_FAILED,
-    );
-  }
-
   /**
    * Take a picture of a bottle of wine, send it to the wine service to get more details about
    * it, then append the result to the chat as a system message.
    */
   async summarizeBottle() {
-    this.createAndPresentActionSheet((source) => this.summarizeBottleFromSource(source));
+    this.createAndPresentActionSheet((source) =>
+      this.consumeImage(
+        source,
+        (image: string) => this.wineService.summarizeWine(image),
+        ErrorCode.BOTTLE_SUMMARIZE_FAILED,
+      ),
+    );
   }
 
   /**
@@ -144,7 +142,7 @@ export class ChatComponent {
     );
   }
 
-  async createAndPresentActionSheet(handler: (source: CameraSource) => void) {
+  async createAndPresentActionSheet(handler: (source: CameraSource) => Promise<void> | void) {
     const actionSheet = await this.actionSheetCtrl.create({
       buttons: [
         {
