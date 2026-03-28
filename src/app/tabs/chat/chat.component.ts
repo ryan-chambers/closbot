@@ -142,7 +142,7 @@ export class ChatComponent {
     );
   }
 
-  async createAndPresentActionSheet(handler: (source: CameraSource) => Promise<void> | void) {
+  async createAndPresentActionSheet(handler: (source: CameraSource) => Promise<void>) {
     const actionSheet = await this.actionSheetCtrl.create({
       buttons: [
         {
