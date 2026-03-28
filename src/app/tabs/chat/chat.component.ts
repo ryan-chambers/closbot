@@ -81,19 +81,6 @@ export class ChatComponent {
     this.chatService.flagChat();
   }
 
-  /**
-   * Take a photo of a wine menu, send it to the wine service for
-   * parsing/recommendation, and append the result to the chat as a
-   * system message.
-   */
-  async readMenu(): Promise<void> {
-    this.consumeImage(
-      CameraSource.Camera,
-      (image: string) => this.wineService.readWineMenu(image),
-      ErrorCode.READ_MENU_FAILED,
-    );
-  }
-
   private async consumeImage(
     source: CameraSource,
     // The consumer will take the image from source and do something with it
@@ -126,28 +113,45 @@ export class ChatComponent {
     }
   }
 
-  private summarizeBottleFromSource(source: CameraSource) {
-    this.consumeImage(
-      source,
-      (image: string) => this.wineService.summarizeWine(image),
-      ErrorCode.BOTTLE_SUMMARIZE_FAILED,
-    );
-  }
-
   /**
    * Take a picture of a bottle of wine, send it to the wine service to get more details about
    * it, then append the result to the chat as a system message.
    */
-  async sumarizeBottle() {
+  async summarizeBottle() {
+    this.createAndPresentActionSheet((source) =>
+      this.consumeImage(
+        source,
+        (image: string) => this.wineService.summarizeWine(image),
+        ErrorCode.BOTTLE_SUMMARIZE_FAILED,
+      ),
+    );
+  }
+
+  /**
+   * Take a photo of a wine menu, send it to the wine service for
+   * parsing/recommendation, and append the result to the chat as a
+   * system message.
+   */
+  async readMenu(): Promise<void> {
+    this.createAndPresentActionSheet((source) =>
+      this.consumeImage(
+        source,
+        (image: string) => this.wineService.readWineMenu(image),
+        ErrorCode.READ_MENU_FAILED,
+      ),
+    );
+  }
+
+  async createAndPresentActionSheet(handler: (source: CameraSource) => Promise<void>) {
     const actionSheet = await this.actionSheetCtrl.create({
       buttons: [
         {
           text: this.content().takePhoto,
-          handler: () => this.summarizeBottleFromSource(CameraSource.Camera),
+          handler: () => handler(CameraSource.Camera),
         },
         {
           text: this.content().chooseFromLibrary,
-          handler: () => this.summarizeBottleFromSource(CameraSource.Photos),
+          handler: () => handler(CameraSource.Photos),
         },
         {
           text: this.content().cancel,
