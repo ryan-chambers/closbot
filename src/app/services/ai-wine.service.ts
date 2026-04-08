@@ -37,7 +37,7 @@ export class AiWineService implements WineServiceInterface {
   async invokeChat(userMessage: string): Promise<string> {
     let wineContext = undefined;
 
-    if (this.configService.isBurgundyFocused()) {
+    if (this.configService.isBurgundyFocused() && userMessage.trim().length > 10) {
       wineContext = await this.pineconeService.getContextForQuery(userMessage);
     }
 
